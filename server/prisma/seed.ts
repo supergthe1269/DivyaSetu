@@ -1,10 +1,10 @@
 // DivyaSetu seed — realistic Indian district data.  npm run db:seed
 // Demo login for every seeded user: mobile / pass1234
 import { PrismaClient, DeviceCategory, Role } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
-// bcrypt("pass1234", 10)
-const PASSWORD_HASH = "$2a$10$sXj7KgtnvVqPwNkcLDQqXurvoGhA3JyvTcEyICq7L2PrVPpytlxtG";
+const PASSWORD_HASH = bcrypt.hashSync("pass1234", 10);
 
 interface Place { city: string; district: string; state: string; lat: number; lng: number }
 
@@ -59,7 +59,7 @@ async function main() {
   const upsertUser = async (name: string, mobile: string, role: Role, extra: Partial<{ disabilityType: string }> = {}, place?: Place) => {
     const row = await prisma.user.upsert({
       where: { mobile },
-      update: {},
+      update: { passwordHash: PASSWORD_HASH, role },
       create: { name, mobile, passwordHash: PASSWORD_HASH, role, isApproved: true, disabilityType: extra.disabilityType, lat: place?.lat, lng: place?.lng },
       select: { id: true },
     });
@@ -69,7 +69,7 @@ async function main() {
     "Sunita Devi", "Vikram Rathore", "Anita Menon", "Basheer Ahmed", "Divya Rao",
     "Karthik S", "Rashmi Kulkarni", "Prakash Joshi", "Neha Gupta"];
   for (let i = 0; i < donorNames.length; i++)
-    donors.push(await upsertUser(donorNames[i], `9000${String(i + 1).padStart(4, "0")}`, "DONOR", {}, PLACES[i % PLACES.length]));
+    donors.push(await upsertUser(donorNames[i], `900000${String(i + 1).padStart(4, "0")}`, "DONOR", {}, PLACES[i % PLACES.length]));
 
   const seekerNames = ["Manoj Kumar", "Sharmila B", "Ramesh Yadav", "Jaya Rani", "Ganesh Potti", "Kavita Verma",
     "Selvi Anbu", "Raju Nayak", "Padma K", "Abdul Rahman", "Sita Devi", "Harish Kumar"];
@@ -77,9 +77,9 @@ async function main() {
   const seekerDisabilities = ["Orthopaedic handicap", "Hearing impairment", "Visual impairment", "Orthopaedic handicap", "Hearing impairment", "Orthopaedic handicap"];
   for (let i = 0; i < seekerNames.length; i++) {
     const p = PLACES[seekerPlaces[i]];
-    seekers.push(await upsertUser(seekerNames[i], `9100${String(i + 1).padStart(4, "0")}`, "SEEKER", { disabilityType: seekerDisabilities[i % seekerDisabilities.length] }, p));
+    seekers.push(await upsertUser(seekerNames[i], `910000${String(i + 1).padStart(4, "0")}`, "SEEKER", { disabilityType: seekerDisabilities[i % seekerDisabilities.length] }, p));
   }
-  for (let i = 0; i < 3; i++) verifierIds.push(await upsertUser(`Dr. Verifier ${i + 1}`, `9200${String(i + 1).padStart(4, "0")}`, "VERIFIER"));
+  for (let i = 0; i < 3; i++) verifierIds.push(await upsertUser(`Dr. Verifier ${i + 1}`, `920000${String(i + 1).padStart(4, "0")}`, "VERIFIER"));
   await upsertUser("Admin", "9300000001", "ADMIN", {}, PLACES[0]);
   console.log(`  · users: donors=${donors.length} seekers=${seekers.length} verifiers=${verifierIds.length}`);
 

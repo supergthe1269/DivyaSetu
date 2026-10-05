@@ -44,9 +44,10 @@ router.post("/", requireAuth, requireRole("VERIFIER", "ADMIN"), async (req: Auth
 // GET /api/certifications?status=PENDING — the verifier work queue.
 router.get("/", requireAuth, requireRole("VERIFIER", "ADMIN"), async (req, res, next) => {
   try {
-    const verdict: Verdict | undefined = ["SAFE", "NOT_SAFE", "PENDING"].includes(String(req.query.status ?? "PENDING"))
-    ? (String(req.query.status) as Verdict)
-    : "PENDING";
+    const statusParam = req.query.status ? String(req.query.status) : "PENDING";
+    const verdict: Verdict = ["SAFE", "NOT_SAFE", "PENDING"].includes(statusParam)
+      ? (statusParam as Verdict)
+      : "PENDING";
   const rows = await prisma.certification.findMany({
       where: { verdict },
       include: { device: { include: { type: true, donor: { select: { name: true, mobile: true } } } }, verifier: { select: { name: true } } },

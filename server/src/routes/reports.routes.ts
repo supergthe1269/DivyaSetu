@@ -10,7 +10,7 @@ router.get("/district-aggregate", requireAuth, requireRole("ADMIN"), async (_req
   try {
     // Served by a SQL VIEW (prisma/bootstrap.sql) grouping available/delivered devices by category.
     const rows = await rawQuery<Record<string, unknown>>(
-      `SELECT category, count_available, count_delivered FROM "vw_district_aggregate" ORDER BY category`
+      `SELECT category, count_available::int AS count_available, count_delivered::int AS count_delivered FROM vw_district_aggregate ORDER BY category`
     );
     res.json({ rows });
   } catch (e) {

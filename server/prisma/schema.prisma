@@ -73,16 +73,16 @@ model User {
   id              Int      @id @default(autoincrement())
   name            String
   mobile          String   @unique
-  passwordHash    String
+  passwordHash    String   @map("password_hash")
   role            Role     @default(DONOR)
   language        String   @default("en")
-  disabilityType  String?
-  isApproved      Boolean  @default(false)
+  disabilityType  String?  @map("disability_type")
+  isApproved      Boolean  @default(false) @map("is_approved")
   lat             Float?
   lng             Float?
-  isDeleted       Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  isDeleted       Boolean  @default(false) @map("is_deleted")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   devices         Device[]
   needs           Need[]
@@ -92,35 +92,38 @@ model User {
 
   @@index([role])
   @@index([isApproved])
+  @@map("users")
 }
 
 // ---------- 2. device_types (reference catalog) ----------
 model DeviceType {
-  id       Int      @id @default(autoincrement())
+  id       Int            @id @default(autoincrement())
   category DeviceCategory @unique
-  label    String   @unique
+  label    String         @unique
   devices  Device[]
+
+  @@map("device_types")
 }
 
 // ---------- 3. devices (asset + lifecycle ledger) ----------
 model Device {
   id           Int           @id @default(autoincrement())
   serial       String        @unique
-  donorId      Int
+  donorId      Int           @map("donor_id")
   donor        User          @relation(fields: [donorId], references: [id])
-  typeId       Int
+  typeId       Int           @map("type_id")
   type         DeviceType    @relation(fields: [typeId], references: [id])
   condition    String        @default("GOOD")
   description  String
   lat          Float?
   lng          Float?
   status       DeviceStatus  @default(AVAILABLE)
-  listedAt     DateTime      @default(now())
-  isDeleted    Boolean       @default(false)
+  listedAt     DateTime      @default(now()) @map("listed_at")
+  isDeleted    Boolean       @default(false) @map("is_deleted")
 
   // PostGIS/raw columns — maintained by bootstrap trigger / geo helper
   geometry       Unsupported("geometry(Point,4326)")?
-  descriptionTsv Unsupported("tsvector")?
+  descriptionTsv Unsupported("tsvector")?             @map("description_tsv")
 
   certifications Certification[]
   matches        Match[]
@@ -128,18 +131,19 @@ model Device {
   @@index([typeId])
   @@index([status])
   @@index([donorId])
+  @@map("devices")
 }
 
 // ---------- 4. needs (demand requests) ----------
 model Need {
   id            Int             @id @default(autoincrement())
-  seekerId      Int
+  seekerId      Int             @map("seeker_id")
   seeker        User            @relation(fields: [seekerId], references: [id])
   category      DeviceCategory
-  urgencyHours  Int             @default(168)
+  urgencyHours  Int             @default(168) @map("urgency_hours")
   lat           Float?
   lng           Float?
-  monthlyIncome Int?
+  monthlyIncome Int?            @map("monthly_income")
   status        DeviceStatus    @default(AVAILABLE)
 
   geometry      Unsupported("geometry(Point,4326)")?
@@ -149,86 +153,93 @@ model Need {
   @@index([category])
   @@index([status])
   @@index([seekerId])
+  @@map("needs")
 }
 
 // ---------- 5. certifications (trust ledger) ----------
 model Certification {
-  id             Int      @id @default(autoincrement())
-  deviceId       Int
-  device         Device   @relation(fields: [deviceId], references: [id])
-  verifierId     Int
-  verifier       User     @relation(fields: [verifierId], references: [id])
-  verdict        Verdict  @default(PENDING)
+  id             Int       @id @default(autoincrement())
+  deviceId       Int       @map("device_id")
+  device         Device    @relation(fields: [deviceId], references: [id])
+  verifierId     Int       @map("verifier_id")
+  verifier       User      @relation(fields: [verifierId], references: [id])
+  verdict        Verdict   @default(PENDING)
   notes          String?
-  certificateRef String?
-  inspectedAt    DateTime?
-  expiresAt      DateTime?
-  createdAt      DateTime @default(now())
+  certificateRef String?   @map("certificate_ref")
+  inspectedAt    DateTime? @map("inspected_at")
+  expiresAt      DateTime? @map("expires_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
   @@index([deviceId])
   @@index([verifierId])
+  @@map("certifications")
 }
 
 // ---------- 6. matches (matching decisions + composite key) ----------
 model Match {
   id        Int         @id @default(autoincrement())
-  deviceId  Int
+  deviceId  Int         @map("device_id")
   device    Device      @relation(fields: [deviceId], references: [id])
-  needId    Int
+  needId    Int         @map("need_id")
   need      Need        @relation(fields: [needId], references: [id])
   score     Float       @default(0)
   source    String      @default("GEO_SCORE")
   status    MatchStatus @default(PROPOSED)
-  createdAt DateTime    @default(now())
+  createdAt DateTime    @default(now()) @map("created_at")
 
   transfers Transfer[]
 
   @@unique([deviceId, needId]) // composite uniqueness guard
   @@index([needId])
   @@index([status])
+  @@map("matches")
 }
 
 // ---------- 7. transfers (the handover) ----------
 model Transfer {
   id          Int            @id @default(autoincrement())
-  matchId     Int
+  matchId     Int            @map("match_id")
   match       Match          @relation(fields: [matchId], references: [id])
-  pickupAddr  String
-  dropoffAddr String
+  pickupAddr  String         @map("pickup_addr")
+  dropoffAddr String         @map("dropoff_addr")
   status      TransferStatus @default(PLANNED)
-  costPaisa   Int?
-  deliveredAt DateTime?
-  createdAt   DateTime       @default(now())
+  costPaisa   Int?           @map("cost_paisa")
+  deliveredAt DateTime?      @map("delivered_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
 
   feedback    Feedback?
 
   @@index([matchId])
+  @@map("transfers")
 }
 
 // ---------- 8. feedback (post-transfer + reuse intent) ----------
 model Feedback {
-  id          Int      @id @default(autoincrement())
-  transferId  Int      @unique
-  transfer    Transfer @relation(fields: [transferId], references: [id])
-  rating      Int      @default(5)
-  notes       String?
-  reListIntent Boolean @default(false)
-  createdAt   DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  transferId   Int      @unique @map("transfer_id")
+  transfer     Transfer @relation(fields: [transferId], references: [id])
+  rating       Int      @default(5)
+  notes        String?
+  reListIntent Boolean  @default(false) @map("re_list_intent")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("feedback")
 }
 
 // ---------- 9. audit_log (immutable trust audit) ----------
 model AuditLog {
   id        Int      @id @default(autoincrement())
-  tableName String
-  recordId  Int
+  tableName String   @map("table_name")
+  recordId  Int      @map("record_id")
   action    String
   payload   Json?
-  actorId   Int?
+  actorId   Int?     @map("actor_id")
   actor     User?    @relation("auditorActor", fields: [actorId], references: [id])
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@index([tableName, recordId])
   @@index([actorId])
+  @@map("audit_log")
 }
 
 // ---------- 10. otps (simple verification) ----------
@@ -237,21 +248,23 @@ model Otp {
   mobile    String
   code      String
   used      Boolean  @default(false)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@index([mobile])
+  @@map("otps")
 }
 
 // ---------- 11. notifications ----------
 model Notification {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    Int      @map("user_id")
   user      User     @relation(fields: [userId], references: [id])
   type      String
   payload   Json?
   seen      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@index([userId, seen])
+  @@map("notifications")
 }

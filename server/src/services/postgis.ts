@@ -8,22 +8,22 @@ export function pointSql(lng: number, lat: number): string {
 /** Bind a device row's geometry from its lat/lng columns. */
 export const SET_DEVICE_GEOMETRY_SQL = `
 UPDATE devices
-SET geometry = ST_SetSRID(ST_MakePoint("lng", "lat"), 4326)::geometry
+SET geometry = ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geometry
 WHERE id = ANY($1::int[])
 `;
 
 /** Bind a need row's geometry from its lat/lng columns. */
 export const SET_NEED_GEOMETRY_SQL = `
 UPDATE needs
-SET geometry = ST_SetSRID(ST_MakePoint("lng", "lat"), 4326)::geometry
+SET geometry = ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geometry
 WHERE id = ANY($1::int[])
 `;
 
 /**
  * Radius matching query (PostGIS). Returns top-N candidate devices for a need.
  *  - Filters by category and status, then by ST_DWithin radius (km).
- *  - Ranks with ROW_NUMBER() OVER (PARTITION BY device.id ORDER BY dist_km)
- *    and a weighted score:  distance dominates, urgency nudges.
+ *  - Ranks with DENSE_RANK() OVER (ORDER BY score DESC, dist_km ASC)
+ *    and a weighted score: distance dominates, urgency nudges.
  *  - Requires an eligible need (not yet fulfilled).
  */
 export const MATCH_CANDIDATES_SQL = `
@@ -34,11 +34,11 @@ WITH geo AS (
 ),
 candidates AS (
   SELECT
-    d.id                         AS device_id,
-    n.id                         AS need_id,
+    d.id                                              AS device_id,
+    n.need_id                                         AS need_id,
     n.urgency_hours,
-    ST_Distance(n.need_geom, d.geometry) / 1000.0  AS dist_km,   -- metres -> km
-    0.6 * (1.0 - least(ST_Distance(n.need_geom, d.geometry) / 1000.0 / $2::float, 1.0))
+    ST_Distance(n.need_geom, d.geometry) / 1000.0     AS dist_km,   -- metres -> km
+    0.6 * (1.0 - least(ST_Distance(n.need_geom, d.geometry) / 1000.0 / ($2::float / 1000.0), 1.0))
       + 0.3 * (1.0 - exp(-n.urgency_hours::float / 168.0))
       + 0.1 * CASE WHEN d.condition = 'EXCELLENT' THEN 1.0 ELSE 0.5 END AS score
   FROM geo n

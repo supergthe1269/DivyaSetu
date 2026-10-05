@@ -10,7 +10,8 @@
     "start": "node dist/index.js",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:bootstrap": "psql \"$DATABASE_URL\" -f prisma/bootstrap.sql",
+    "db:bootstrap": "tsx prisma/bootstrap.ts",
+    "db:bootstrap:psql": "psql \"$DATABASE_URL\" -f prisma/bootstrap.sql",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate"
@@ -20,12 +21,14 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@types/pg": "^8.23.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

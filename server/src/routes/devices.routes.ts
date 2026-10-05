@@ -70,8 +70,7 @@ router.get("/", requireAuth, async (req, res, next) => {
           AND d.is_deleted = false
           AND ST_DWithin(n.geom, d.geometry, ${radius}::float * 1000)
         ORDER BY dist_km ASC
-        LIMIT 50`,
-      undefined
+        LIMIT 50`
     );
     const ids = (rows as { device_id: number }[]).map((r) => r.device_id);
     const devices = ids.length
@@ -95,8 +94,7 @@ router.get("/:id/matches", requireAuth, async (req, res, next) => {
        SELECT n.id AS need_id, round((ST_Distance(g.g, n.geometry) / 1000.0)::numeric,1)::float AS dist_km
        FROM needs n CROSS JOIN g
        WHERE n.status = 'AVAILABLE' AND n.category = '${device.type.category}'
-       ORDER BY (n.urgency_hours) ASC, dist_km ASC LIMIT 5`,
-      undefined
+       ORDER BY (n.urgency_hours) ASC, dist_km ASC LIMIT 5`
     );
     res.json({ matches: rows });
   } catch (e) {
