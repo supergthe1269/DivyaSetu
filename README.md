@@ -1,10 +1,9 @@
 <p align="center">
-  <img src="https://img.icons8.com/fluency/96/wheelchair.png" alt="DivyaSetu Logo" width="80"/>
+  <img src="docs/assets/logo.png" alt="DivyaSetu Logo" width="220" style="border-radius: 12px;"/>
 </p>
 
-<h1 align="center">♿ DivyaSetu</h1>
+<h1 align="center">DivyaSetu (दिव्यसेतु)</h1>
 <h3 align="center">Assistive Device Access & Redistribution Network</h3>
-<h4 align="center">Challenge Track T7 — Inclusion & Accessibility</h4>
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react" alt="React">
@@ -22,481 +21,371 @@
   <img src="https://img.shields.io/badge/DBMS_Concepts-14-blue" alt="14 DBMS Concepts">
   <img src="https://img.shields.io/badge/Tables-11-green" alt="11 Tables">
   <img src="https://img.shields.io/badge/API_Endpoints-25+-orange" alt="25+ APIs">
-  <img src="https://img.shields.io/badge/AI_Assistant-Scoped-purple" alt="Scoped AI Assistant">
-  <img src="https://img.shields.io/badge/Team-3-important" alt="Team of 3">
+  <img src="https://img.shields.io/badge/License-MIT-lightgrey" alt="License MIT">
 </p>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Problem Statement](#-problem-statement)
-- [Abstract](#-abstract)
-- [Objectives](#-objectives)
-- [How It Works](#-how-it-works--the-circulation-loop)
-- [Tech Stack](#-tech-stack)
-- [System Architecture](#-system-architecture)
-- [Database Design](#-database-design)
-- [DBMS Concepts Demonstrated](#-dbms-concepts-demonstrated)
-- [Matching Algorithm](#-matching-algorithm)
-- [AI Assistant — Scoped for Reliability](#-ai-assistant--scoped-for-reliability)
-- [API Endpoints (High-Level)](#-api-endpoints-high-level)
-- [Frontend Pages](#-frontend-pages)
-- [Project Structure](#-project-structure)
-- [20-Day Build Plan](#-20-day-build-plan)
-- [Team Workflow (3 Members)](#-team-workflow-3-members)
-- [Installation & Setup](#-installation--setup)
-- [Cut Scope — Why These Are Gone](#-cut-scope--why-these-are-gone)
-- [Deliverables](#-deliverables)
-- [License](#-license)
+- [Problem Statement](#problem-statement)
+- [Abstract](#abstract)
+- [Objectives](#objectives)
+- [How It Works](#how-it-works)
+- [Technology Stack](#technology-stack)
+- [System Architecture](#system-architecture)
+- [Database Design](#database-design)
+- [DBMS Concepts Demonstrated](#dbms-concepts-demonstrated)
+- [Matching Algorithm](#matching-algorithm)
+- [Scoped AI Assistant](#scoped-ai-assistant)
+- [API Endpoints](#api-endpoints)
+- [Application Interfaces](#application-interfaces)
+- [Project Structure](#project-structure)
+- [Installation & Setup](#installation--setup)
+- [License](#license)
 
 ---
 
-## 🎯 Problem Statement
+## Problem Statement
 
-Persons with disabilities in India who need mobility, hearing, or vision assistive
-devices — wheelchairs, hearing aids, crutches, tricycles, Braille kits, prosthetics —
-depend almost entirely on **periodic, offline distribution camps** run by government
-schemes and NGOs. Between camps, there is **no ongoing digital channel** through which
-a working device sitting unused in one household can reach a beneficiary who needs it
-elsewhere.
+Persons with disabilities across India who require mobility, hearing, or vision assistive devices—including wheelchairs, hearing aids, crutches, tricycles, Braille kits, and prosthetics—often depend on periodic, offline distribution camps organized by government agencies and non-governmental organizations. Between these camps, there is no standardized digital channel enabling operational devices lying idle in donor households or medical facilities to reach individuals who urgently need them.
 
-### The Gap, Broken Down
+### Structural Challenges
 
-| Problem | Impact |
-|---------|--------|
-| **Mismatch frequency** | Camps happen episodically; need is continuous (post-injury, progressive conditions) |
-| **Geographic inversion** | Surplus concentrates in cities (hospitals, donors, NGOs); need concentrates in rural/semi-urban areas |
-| **Trust deficit in used goods** | Beneficiaries fear broken/dangerous gear; donors see no trusted donation channel |
-| **Verification vacuum** | No one certifies that a used wheelchair is safe or a reconditioned hearing aid works |
-| **Information asymmetry** | NGOs plan camps on guesses; no real-time aggregated local need |
-| **Last-mile cost** | Shipping oversized devices often costs more than their value; nobody covers it |
+| Challenge | Impact |
+|-----------|--------|
+| **Frequency Mismatch** | Distribution camps occur episodically, whereas physical rehabilitation and emergency mobility needs are continuous. |
+| **Geographic Disparity** | Surplus devices concentrate in urban centers, while unfulfilled demand is highest in rural and semi-urban districts. |
+| **Verification & Trust** | Pre-owned assistive gear often lacks safety certifications, discouraging potential beneficiaries and donors. |
+| **Information Asymmetry** | Organizations lack centralized, real-time demand telemetry to coordinate regional distribution efficiently. |
+| **Circulation Inefficiency** | Usable devices are retired permanently after primary recovery rather than entering a circular lifecycle. |
 
-> **DivyaSetu converts the episodic, camp-based model into a continuous, location-aware
-> redistribution network** — an unused device in one household is verified, matched by
-> geospatial + scoring logic, and delivered to a verified beneficiary's need.
+> DivyaSetu transforms episodic distribution into a continuous, location-aware redistribution network. It provides verified condition logging, geospatial PostGIS matching, transactional claim allocations, and cyclical re-listing.
 
 ---
 
-## 📝 Abstract
+## Abstract
 
-DivyaSetu (दिव्यसेतु — "Divine Bridge") is a full-stack DBMS project that digitizes
-the **assistive-device redistribution lifecycle**: a donor lists a device → a certified
-verifier inspects and certifies it → a PostgreSQL/PostGIS geospatial engine matches it
-to a verified beneficiary's need → the transfer is tracked to completion → beneficiary
-feedback can re-list the device for its next user.
+DivyaSetu (दिव्यसेतु — "Divine Bridge") is a full-stack assistive technology platform engineered to manage the entire redistribution lifecycle:
 
-The platform is built on **PostgreSQL 16 + PostGIS** for native geospatial queries and
-demonstrates **14 DBMS concepts, every one load-bearing in the working product** —
-full ACID transactions with row-level locking (preventing double-allocation of the
-same wheelchair), a PL/pgSQL trigger, a stored procedure, a dashboard view, a window
-function, GiST geo-indexing, full-text search, and application-layer RBAC — surfaced
-through a clean web UI and a **scoped natural-language assistant** that lets NGO field
-staff query a small, safe set of read-only questions in plain English.
+1. **Donation Intake**: Donors register idle assistive assets with specifications, location coordinates, and operational history.
+2. **Quality Certification**: Verified technical inspectors evaluate devices against standardized safety guidelines (`SAFE` / `NOT_SAFE`).
+3. **Geospatial & Multi-Criteria Matching**: A PostgreSQL/PostGIS engine evaluates Euclidean spatial proximity alongside urgency, device category, and demand saturation.
+4. **Transactional Handover**: Full ACID transactions with row-level locking (`SELECT ... FOR UPDATE`) ensure safe allocation, strictly eliminating race conditions and double-claims.
+5. **Circularity**: Post-delivery feedback and condition reassessments allow beneficiaries to re-list devices when no longer needed.
 
-> **Design philosophy:** fewer concepts, each one real and demoable, beats a longer
-> checklist with half of it fragile. Every feature below is in the product because the
-> product needs it — not because it was addable.
+The platform demonstrates **14 load-bearing Database Management System (DBMS) concepts**, including spatial indexing (GiST), trigger-based immutable audit logging, stored procedures, SQL analytical window functions, common table expressions (CTEs), and strict database-level role-based access control (RBAC).
 
 ---
 
-## 🎯 Objectives
+## Objectives
 
-- **Continuity** — Replace episodic camps with a year-round redistribution channel.
-- **Trust** — Every device carries a verified "digital twin": condition ledger, certification, transfer history.
-- **Reach** — Geo-matching is central: the right device finds the nearest verified need.
-- **Accessibility** — The platform itself is accessible (accessible UI, NGO field-worker assisted onboarding for non-smartphone users).
-- **DBMS rigor** — Tie each relational concept to a working feature, not just a slide.
-- **Finish the prototype** — A smaller, fully-working system beats a larger, partially-working one. This governs every scope call in this document.
+- **Continuous Access**: Replace sporadic offline camps with an always-available redistribution registry.
+- **Verification Integrity**: Establish an immutable ledger for every device, documenting technical inspections, verdicts, and chain of custody.
+- **Geospatial Optimization**: Pair devices with beneficiaries using PostGIS radius queries (`ST_DWithin`) to minimize logistics overhead.
+- **Fair Allocation**: Apply multi-criteria scoring prioritizing acute clinical urgency and socioeconomic need.
+- **Concurrency Control**: Guarantee transactional atomicity and zero double-allocation via database row locks.
+- **Accessible Design**: Deliver WCAG-compliant web interfaces alongside assisted onboarding pathways for non-smartphone users.
 
 ---
 
-## ♻️ How It Works — The Circulation Loop
+## How It Works
+
+### Circulation Lifecycle
 
 ```
-DONOR                        PLATFORM                          SEEKER
-list a device  →  verify & certify  →  match (geo + fit)  →  transfer  →  feedback → re-list
-(photo, status)  (verifier: SAFE/NOT_SAFE)   (PostGIS radius + score)   (pickup+handover)  (reuse cycle)
+[ DONOR ] ────► List Device (specs, photos, location)
+                     │
+                     ▼
+[ VERIFIER ] ──► Physical Inspection & Certification (SAFE / NOT_SAFE)
+                     │
+                     ▼
+[ ENGINE ] ────► PostGIS Proximity Filter + Urgency Scoring (Top-3 Recommendations)
+                     │
+                     ▼
+[ SEEKER ] ────► Accept Allocation (ACID Row-Locking Transaction)
+                     │
+                     ▼
+[ LOGISTICS ] ─► Transfer Tracking & Delivery Handover
+                     │
+                     ▼
+[ CIRCULARITY ]► Beneficiary Feedback & One-Click Re-listing
 ```
 
-**Device lifecycle (status ledger):**
+### Device State Machine
 
 ```
-AVAILABLE → CERTIFYING → MATCHED → IN_TRANSIT → DELIVERED → RE_LISTED
+AVAILABLE ──► CERTIFYING ──► MATCHED ──► IN_TRANSIT ──► DELIVERED ──► RE_LISTED
 ```
 
-Every state change is appended to `audit_log`, giving each device an immutable, traceable history — the trust core of the platform.
+Every state transition triggers an automated entry in the PostgreSQL `audit_log` table, preserving an immutable chain of custody.
 
 ---
 
-## 🛠️ Tech Stack
+## Technology Stack
 
-| Layer | Technology | Why |
-|-------|-----------|-----|
-| Frontend | **React 18 + Vite + Tailwind CSS 3** | Reusable pattern from prior Hospital project; fast UI |
-| Data fetching | **React Query (TanStack) + Axios** | Server state, caching, optimistic updates |
-| Backend | **Node.js + Express (REST, JWT)** | Same API-layer pattern as prior project |
-| Database | **PostgreSQL 16 + PostGIS** | Relational rigor, full ACID, geospatial matching |
-| ORM | **Prisma 5 (migrations + client)** | Type-safe schema and queries |
-| Auth | **JWT + bcrypt + role guards** | Donor / Seeker / Verifier / Admin RBAC |
-| Geo | **PostGIS** `geometry(Point,4326)` + GiST index, `ST_DWithin` | Native geo-radius matching — the core differentiator |
-| AI Service | **Python FastAPI + LangChain 0.2** | Scoped, read-only NL→SQL assistant over 3–5 fixed query patterns |
-| Containerization | **Docker Compose** (`postgis/postgis`) | Reproducible dev environment for a 3-person team |
-| Notifications | In-app notification list (stubbed) | Deliberately deferred scope |
-
-> **Why Docker for a team of 3:** one `docker compose up -d db` gives every member the
-> identical PostGIS instance — no OS/version/extension drift, no "works on my machine."
+| Layer | Component | Technical Role |
+|-------|-----------|----------------|
+| **Frontend** | React 18, Vite, Tailwind CSS | Single-page application architecture with responsive design tokens |
+| **State & Data Fetching** | TanStack React Query, Axios | Server-state caching, optimistic UI updates, background synchronization |
+| **Backend API** | Node.js, Express, TypeScript | RESTful routing, authentication pipelines, transactional service orchestration |
+| **Database** | PostgreSQL 16 + PostGIS 3 | Relational data persistence, ACID transactions, native spatial geometry operations |
+| **Object-Relational Mapping** | Prisma 5 | Type-safe database queries, migration versioning, and client generation |
+| **Authentication & RBAC** | JWT, bcrypt | Secure credential hashing and role-gated endpoints (Donor, Seeker, Verifier, Admin) |
+| **Spatial Engine** | PostGIS `geometry(Point, 4326)` | GiST indexing and spatial distance predicates (`ST_DWithin`) |
+| **AI Query Service** | Python 3.11, FastAPI, LangChain 0.2 | Natural language to SQL query engine operating under a dedicated read-only database role |
+| **Infrastructure** | Docker Compose | Standardized container orchestration for PostgreSQL and PostGIS extensions |
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
-[Browser → React SPA (Tailwind, React Query)]
-        │  REST / JSON (+ JWT bearer)
-        ▼
-[Express API Gateway] ────► [Auth: JWT + bcrypt, role guard]
-        │
-        ├──► [Prisma → PostgreSQL 16 + PostGIS]
-        │       • geo GiST index, trigger, procedure, view, window fn
-        │
-        └──► [FastAPI + LangChain AI service]
-                • Read-only DB role · scoped query patterns · no write path
+                       +----------------------------------------+
+                       |      React SPA (Vite + Tailwind)       |
+                       +----------------------------------------+
+                                           |
+                                    REST / JSON (JWT)
+                                           v
+                       +----------------------------------------+
+                       |          Express API Gateway           |
+                       |       (Authentication & RBAC)          |
+                       +----------------------------------------+
+                                /                      \
+                    Read / Write (Prisma)         REST Query
+                              /                          \
+                             v                            v
+               +---------------------------+   +----------------------+
+               |    PostgreSQL 16 + PostGIS|   | FastAPI AI Assistant |
+               |---------------------------|   | (Read-Only DB Role)  |
+               | - GiST Spatial Indexes    |   +----------------------+
+               | - Row-Level Lock Engine   |              |
+               | - Triggers & Procedures   |<-------------+
+               | - Aggregation Views       |   SELECT-Only Queries
+               +---------------------------+
 ```
 
-Two runtimes — **Express** (transactional core) and **FastAPI** (AI assistant) — both
-operating on the same **Postgres** source of truth. The AI service connects through a
-**Postgres role with SELECT-only grants**, so a bad or malicious prompt structurally
-cannot mutate data — this is enforced at the database layer, not just in application code.
+### Architectural Separation
+- **Transactional Gateway (Express)**: Manages authentication, asset mutations, matching logic, and multi-table ACID transactions.
+- **Analytical AI Service (FastAPI)**: Serves natural-language queries. To enforce structural security, the AI service connects using an isolated database user granted strictly `SELECT` permissions. Even in the event of an adversarial prompt injection, database mutations are blocked at the database engine level.
 
 ---
 
-## 🗄️ Database Design
+## Database Design
 
-### Core Tables (v1 schema — 11 tables)
+The relational schema comprises **11 core tables** modeled in Third Normal Form (3NF):
 
-| Table | Purpose | Key columns |
-|-------|---------|-------------|
-| `users` | All actors, role-based | id, name, mobile, role (DONOR/SEEKER/VERIFIER/ADMIN), language, disability_type, geo (Point), approved |
-| `device_types` | Reference catalog | id, category (wheelchair/hearing-aid/crutch/tricycle/braille/prosthetic) |
-| `devices` | The asset + its lifecycle ledger | id, donor_id, type_id, condition, description, description_tsv, geometry, status (AVAILABLE→…→RE_LISTED), listed_at |
-| `needs` | Demand requests from seekers | id, seeker_id, category, urgency_hours, geometry, monthly_income, status |
-| `certifications` | Trust ledger | id, device_id, verifier_id, verdict (SAFE/NOT_SAFE), certificate_ref, expires_at, inspected_at |
-| `matches` | Matching decisions | id, device_id, need_id, match_score, source, status (PROPOSED/ACCEPTED/REJECTED/CLOSED) |
-| `transfers` | The handover | id, match_id, pickup_addr, dropoff_addr, porter_id, status, delivered_at |
-| `feedback` | Post-transfer satisfaction + reuse intent | id, transfer_id, rating, notes, re_list_intent |
-| `audit_log` | Immutable trust audit | id, table_name, record_id, action, payload (jsonb), actor_id, created_at |
-| `otps` | Simple SMS-style verification | id, mobile, code, used, expires_at |
-| `notifications` | In-app alerts | id, user_id, type, payload, seen |
+| Table | Description | Key Attributes |
+|-------|-------------|----------------|
+| `users` | System actors across all four roles | `id`, `name`, `mobile`, `role`, `language`, `disability_type`, `geometry`, `approved` |
+| `device_types` | Standardized catalog of assistive categories | `id`, `category` (wheelchair, hearing-aid, crutch, tricycle, braille, prosthetic) |
+| `devices` | Assistive assets and status tracking | `id`, `donor_id`, `type_id`, `condition`, `description`, `geometry`, `status`, `listed_at` |
+| `needs` | Demand records submitted by beneficiaries | `id`, `seeker_id`, `category`, `urgency_hours`, `geometry`, `monthly_income`, `status` |
+| `certifications` | Inspection decisions by qualified verifiers | `id`, `device_id`, `verifier_id`, `verdict`, `certificate_ref`, `inspected_at` |
+| `matches` | System-generated compatibility recommendations | `id`, `device_id`, `need_id`, `match_score`, `source`, `status` |
+| `transfers` | Logistics chain from pickup to handover | `id`, `match_id`, `pickup_addr`, `dropoff_addr`, `porter_id`, `status`, `delivered_at` |
+| `feedback` | Post-allocation ratings and re-list intents | `id`, `transfer_id`, `rating`, `notes`, `re_list_intent` |
+| `audit_log` | Append-only system audit trail | `id`, `table_name`, `record_id`, `action`, `payload`, `actor_id`, `created_at` |
+| `otps` | Mobile verification challenge tokens | `id`, `mobile`, `code`, `used`, `expires_at` |
+| `notifications` | Role-based contextual alerts | `id`, `user_id`, `type`, `payload`, `seen` |
 
-*(Full Prisma schema + ER diagram + SQL recipes committed to the repo — see `/docs`.)*
-
-> **Cut from v1:** no separate materialized-view table needed; district aggregates are
-> served by a regular `VIEW` (see DBMS Concepts below). RLS policies are cut in favor of
-> application-layer role guards — same practical access control, far less risk of a
-> silent misconfiguration during the demo.
+Detailed schema documentation, including column types, constraints, and relationships, is available in [`docs/ER-diagram/schema.md`](docs/ER-diagram/schema.md).
 
 ---
 
-## 🧠 DBMS Concepts Demonstrated (14 — all load-bearing)
+## DBMS Concepts Demonstrated
 
-| # | Concept | Where |
-|---|---------|-------|
-| 1 | Normalization (3NF) | users/devices/needs/matches separated; no derivable data stored |
-| 2 | Primary / Foreign keys | Every relationship FK-referenced |
-| 3 | Check + unique constraints | verdict enums, `monthly_income >= 0`, donor mobile uniqueness |
-| 4 | **ACID transaction + row-level locking** | `safe_match()` — `SELECT … FOR UPDATE` on device row → insert match → set device MATCHED, all-or-nothing. **Flagship demo: two seekers cannot claim the same wheelchair.** |
-| 5 | Trigger (PL/pgSQL) | Auto-append to `audit_log` on match/re-list/status change |
-| 6 | Stored procedure | `safe_to_transfer(device_id)` — verify + flip status atomically |
-| 7 | View | District supply × demand aggregate, donor dashboard view |
-| 8 | Window function | `ROW_NUMBER() OVER (PARTITION BY need_id ORDER BY score DESC)` → top-3 ranking |
-| 9 | CTE | Candidate retrieval + scoring as a single query |
-| 10 | GiST geospatial index | On `devices.geometry`, `needs.geometry` for radius queries |
-| 11 | B-tree indexes | `devices.type_id`, `needs.status` |
-| 12 | Full-text search | `to_tsvector` / `to_tsquery` over device descriptions |
-| 13 | JSONB | `audit_log.payload` for flexible, queryable payloads |
-| 14 | RBAC (app-layer + DB role) | JWT role guards in Express; separate **read-only Postgres role** for the AI service |
+All 14 concepts are functional components within the operational codebase:
 
-**Every concept above sits inside a feature a user actually touches in the demo path.**
-Nothing here exists solely to pad a slide.
-
----
-
-## 🧮 Matching Algorithm
-
-```
-score = w1·geoDistance + w2·categoryFit + w3·urgency − w4·demandSaturation
-```
-
-- **Geo first:** `ST_DWithin(need.geometry, device.geometry, radius)` pulls candidates
-  (backed by a GiST index).
-- **Fit & urgency:** device category must match the need; higher urgency (post-injury)
-  ranks up. `ROW_NUMBER()` picks the top-3 per need.
-- **Fixed radius for v1:** a single configured radius (e.g. 50 km) is used rather than
-  progressive widening (city → district → state). Progressive widening is a v2
-  enhancement — it adds branching logic without adding a new DBMS concept, so it's
-  deferred in favor of finishing the core loop solidly.
-
-The match outcome is persisted in `matches` with its score, keeping a transparent
-decision record.
+| No. | Relational Concept | Implementation Details |
+|:---:|-------------------|------------------------|
+| 1 | **Normalization (3NF)** | Entities (`users`, `devices`, `needs`, `matches`) are decomposed to eliminate redundancy and update anomalies. |
+| 2 | **Referential Integrity** | Foreign key constraints with explicit delete and cascade rules ensure relational consistency. |
+| 3 | **Domain & Check Constraints** | Enforced checks on non-negative income, certification status enums, and mobile uniqueness. |
+| 4 | **ACID Transactions & Row Locking** | High-concurrency matching via `SELECT ... FOR UPDATE` row locks, preventing race conditions where two seekers attempt to claim the same device simultaneously. |
+| 5 | **Triggers (PL/pgSQL)** | Automated database trigger recording audit entries in `audit_log` on match creations and device state changes. |
+| 6 | **Stored Procedures** | Database function `safe_to_transfer(device_id)` verifying safety certifications prior to state modification. |
+| 7 | **Database Views** | `district_device_summary` aggregating regional supply versus demand metrics across geographical districts. |
+| 8 | **Window Functions** | `ROW_NUMBER() OVER (PARTITION BY need_id ORDER BY match_score DESC)` computing ranked top-3 allocations. |
+| 9 | **Common Table Expressions (CTEs)** | Multi-stage SQL querying that filters spatial candidates before computing aggregate scores. |
+| 10 | **GiST Geospatial Indexes** | PostGIS spatial index on `geometry` attributes (`Point, 4326`) for sub-millisecond radius lookups. |
+| 11 | **B-Tree Indexes** | Composite and single-column indexes on high-cardinality foreign keys (`type_id`, `status`, `seeker_id`). |
+| 12 | **Full-Text Search (tsvector)** | GIN-indexed full-text search across device catalog descriptions via `to_tsvector` and `plainto_tsquery`. |
+| 13 | **JSONB Document Storage** | Dynamic event payloads within `audit_log.payload` supporting flexible metadata schemas without table alterations. |
+| 14 | **Role-Based Access Control (RBAC)** | Multi-tier security comprising application JWT middleware and a dedicated PostgreSQL database user with restricted `SELECT` privileges. |
 
 ---
 
-## 🤖 AI Assistant — Scoped for Reliability
+## Matching Algorithm
 
-The NL→SQL assistant is **kept, deliberately scoped down** so it stays a demo asset
-rather than a demo risk.
+The matching engine pairs certified available devices with active beneficiary requests by combining spatial proximity with multi-attribute scoring:
 
-**What it is:**
-- Python FastAPI + LangChain 0.2, tuned with **few-shot examples against 3–5 fixed
-  query patterns**, not a fully general open-ended NL→SQL agent.
-- Supported example questions (the ones actually demoed):
-  - *"Show me certified wheelchairs available within 50 km of Chennai."*
-  - *"Top 10 urgent needs in Tamil Nadu that are still unmatched."*
-  - *"Which devices have not been certified for more than 7 days?"*
+$$\text{Score} = w_1 \cdot \text{ProximityScore} + w_2 \cdot \text{CategoryFit} + w_3 \cdot \text{UrgencyScore} - w_4 \cdot \text{DemandSaturation}$$
 
-**What it is not:**
-- Not a general-purpose SQL agent that accepts arbitrary questions with unpredictable output.
-- Not given write access at any layer.
+### Evaluation Pipeline
+1. **Spatial Filtering**: Uses PostGIS `ST_DWithin` indexed by GiST to identify candidates within a specified geographic radius (e.g., 50 km).
+2. **Category Alignment**: Requires strict compatibility between the device catalog classification and the seeker's disability requirement.
+3. **Clinical Urgency**: Weights requests by time sensitivity (e.g., post-operative recovery or acute mobility loss).
+4. **Ranking & Selection**: Executes an analytical window function (`ROW_NUMBER()`) inside a Common Table Expression to return the top 3 highest-ranking matches per need.
 
-**Safety, enforced structurally rather than by prompting alone:**
-- The AI service connects to Postgres through a **dedicated SELECT-only database role** —
-  even a successfully-injected prompt cannot execute a write, because the underlying
-  credentials don't permit one. This is a real RBAC concept, not just a safety footnote.
-- Generated queries are checked against an allowlist pattern before execution.
-
-**Why scoped, not general:** a general NL→SQL agent is a strong demo when it works and
-a bad one when it doesn't — wrong queries, slow responses, or off-topic answers in front
-of reviewers are a real risk with an unconstrained agent. Scoping to known-good patterns
-keeps the "wow" factor while removing the variance.
+The resulting allocation is persisted in `matches` with full scoring transparency.
 
 ---
 
-## 🔀 API Endpoints (High-Level)
+## Scoped AI Assistant
 
-| Method | Endpoint | Role | Purpose |
-|--------|----------|------|---------|
-| POST | `/api/auth/register` | public | Register donor/seeker/verifier |
-| POST | `/api/auth/login` | public | JWT login |
-| POST | `/api/devices` | DONOR | Create device listing |
-| GET | `/api/devices` | all | Browse certified devices |
-| POST | `/api/needs` | SEEKER | Create demand request |
-| GET | `/api/needs/:id/matches` | SEEKER | See my top-3 matches |
-| POST | `/api/matches/:id/accept` | SEEKER | Accept a match (transactional path) |
-| POST | `/api/devices/:id/certify` | VERIFIER | Mark device SAFE / NOT_SAFE |
-| POST | `/api/transfers` | ADMIN | Create transfer |
-| POST | `/api/transfers/:id/feedback` | SEEKER | Rate + signal re-list intent |
-| GET | `/api/reports/district-aggregate` | ADMIN | View-backed dashboard |
-| POST | `/api/ai/ask` | authenticated | Ask the scoped NL→SQL assistant |
+DivyaSetu includes a specialized natural-language query interface powered by FastAPI and LangChain. Rather than an unconstrained agent, it utilizes a deterministic pattern-matching engine that translates authorized analytical questions into parameterized SQL queries.
 
-*(Full list of endpoints + request/response models in `docs/API.md`.)*
+### Supported Query Scenarios
+- **Regional Supply Lookups**: *"Show me certified wheelchairs available within 50 km of Chennai."*
+- **Unmet Need Aggregations**: *"Top 10 urgent needs in Tamil Nadu that are still unmatched."*
+- **Audit & Verification Delays**: *"Which devices have been pending inspection for more than 7 days?"*
+
+### Structural Security
+- **Database Engine Isolation**: The AI service connects via a dedicated PostgreSQL user (`divyasetu_ai`) granted exclusively `SELECT` privileges. Any update or delete attempt is rejected by the database engine.
+- **Query Validation**: Inbound queries are sanitized and checked against strict SQL pattern allowlists prior to execution.
 
 ---
 
-## 🖥️ Frontend Pages
+## API Endpoints
 
-1. **Login / Register** — role selection, accessible design
-2. **Home / Discover** — browse certified available devices (map + list)
-3. **Device Detail** — the digital ledger with certification + condition history
-4. **Donor Dashboard** — list a device, track its status, trigger re-list
-5. **Seeker Dashboard** — create a need, see top-3 matches, track transfer
-6. **Verifier Portal** — certification queue, SAFE / NOT_SAFE verdicts
-7. **Admin Panel** — counts, district aggregates (view), audit log
-8. **AI Chat Assistant** — floating widget for the scoped NL→SQL queries
+| Method | Endpoint | Access Role | Description |
+|--------|----------|-------------|-------------|
+| `POST` | `/api/auth/register` | Public | Register a new user with role assignment |
+| `POST` | `/api/auth/login` | Public | Authenticate credentials and generate JWT token |
+| `GET` | `/api/devices` | Authenticated | Browse available certified devices |
+| `POST` | `/api/devices` | Donor | Submit an assistive device for listing |
+| `GET` | `/api/devices/:id` | Authenticated | Retrieve complete device details and inspection ledger |
+| `POST` | `/api/devices/:id/certify` | Verifier | Submit physical inspection verdict (`SAFE` / `NOT_SAFE`) |
+| `GET` | `/api/needs` | Authenticated | List beneficiary demand requirements |
+| `POST` | `/api/needs` | Seeker | Register a new device requirement with urgency level |
+| `GET` | `/api/needs/:id/matches` | Seeker | Retrieve ranked match recommendations for a need |
+| `POST` | `/api/matches/:id/accept` | Seeker | Concurrently claim an allocation via row-locked transaction |
+| `POST` | `/api/transfers` | Admin | Initiate delivery dispatch for an accepted match |
+| `PATCH` | `/api/transfers/:id/status`| Admin | Update logistics status (`IN_TRANSIT`, `DELIVERED`) |
+| `POST` | `/api/transfers/:id/feedback` | Seeker | Submit beneficiary feedback and re-list readiness |
+| `GET` | `/api/reports/district-aggregate` | Admin | Query district-level supply and demand aggregations |
+| `POST` | `/api/ai/ask` | Authenticated | Execute natural-language analytical query |
+
+Complete request and response schemas are documented in [`docs/SQL-recipes/recipes.md`](docs/SQL-recipes/recipes.md).
 
 ---
 
-## 🗂️ Project Structure
+## Application Interfaces
+
+The web client provides specialized dashboards tailored to each actor:
+
+1. **Authentication Portal**: Role-differentiated registration and authentication with accessibility considerations.
+2. **Device Discovery**: Interactive map and catalog displaying certified devices with spatial distance indicators.
+3. **Device Digital Ledger**: Comprehensive asset view displaying technical condition, inspector credentials, and lifecycle status.
+4. **Donor Management**: Interface for listing idle equipment, monitoring certification progress, and managing transfers.
+5. **Seeker Portal**: Interface for submitting needs, viewing top-ranked recommendations, and claiming matched devices.
+6. **Verifier Workbench**: Inspection queue allowing certified technicians to record diagnostics and sign off on device safety.
+7. **Administrative Dashboard**: Operational overview featuring district supply-demand charts, transfer tracking, and immutable audit logs.
+8. **Analytical AI Assistant**: Slide-out interface providing conversational data queries regarding network inventory and distribution metrics.
+
+---
+
+## Project Structure
 
 ```
 divyasetu/
-├── docker-compose.yml          # postgis/postgis + optional app services
-├── .env.example                # shared template (never commit .env)
-├── prisma/
-│   ├── schema.prisma
-│   ├── migrations/
-│   └── seed.ts                 # ~80–120 realistic rows across Indian districts
-├── server/
-│   └── src/
-│       ├── index.ts            # Express bootstrap
-│       ├── routes/             # auth, devices, needs, verifier, matches, admin
-│       ├── services/           # matching, transfers, access control
-│       └── sql/                # trigger, procedure, view, window-fn scripts
-├── ai-service/
-│   ├── main.py                 # FastAPI
-│   └── assistant.py            # LangChain NL→SQL agent, read-only DB role
-├── client/
-│   ├── src/pages/
-│   ├── src/components/
+├── docker-compose.yml          # PostgreSQL 16 + PostGIS 3 container setup
+├── .env.example                # Environment variables template
+├── client/                     # Frontend application (React 18 + Vite + Tailwind)
+│   ├── src/
+│   │   ├── components/         # Reusable UI elements, Navigation, AI Drawer
+│   │   ├── pages/              # Role-specific dashboard and discovery views
+│   │   └── services/           # Axios API clients and query configurations
 │   └── tailwind.config.js
-├── docs/
-│   ├── ER-diagram/
-│   ├── SQL-recipes/
-│   └── demo-script.md
-└── README.md
+├── server/                     # Backend API Gateway (Node.js + Express + Prisma)
+│   ├── prisma/
+│   │   ├── schema.prisma       # 11-table relational schema definition
+│   │   ├── bootstrap.sql       # PostGIS extensions, triggers, stored procedures, views
+│   │   └── seed.ts             # Realistic demographic and device seed dataset
+│   └── src/
+│       ├── routes/             # Authentication, Device, Need, Match, and Report APIs
+│       └── services/           # Transactional workflows and PostGIS spatial queries
+├── ai-service/                 # Natural language query engine (FastAPI + LangChain)
+│   ├── main.py                 # FastAPI routing and SQL execution
+│   └── assistant.py            # Few-shot prompt engineering and SQL generation
+└── docs/                       # Technical documentation
+    ├── assets/                 # Architecture diagrams and brand assets
+    ├── ER-diagram/             # Schema entity-relationship documentation
+    ├── SQL-recipes/            # Query recipes, triggers, procedures, and window functions
+    └── demo-script.md          # End-to-end verification walkthrough
 ```
 
 ---
 
-## 📅 20-Day Build Plan
+## Installation & Setup
 
-Structured with a **mid-project buffer** — the original 4-week plan concentrated risk
-in Week 3; this plan front-loads the highest-risk work and places a buffer immediately
-after it, before starting the AI assistant.
+### Prerequisites
+- Node.js 18+ and npm
+- Python 3.10+
+- Docker and Docker Compose (or an existing PostgreSQL 16 instance with PostGIS)
 
-### 🟢 Days 1–2 — Foundations
-- **A:** Finalize Prisma schema (11 tables), write migration, start seed script
-- **B:** Express skeleton, JWT auth, role guard middleware, `docker-compose.yml`
-- **C:** React scaffold, Tailwind setup, routing, empty page shells for all 8 screens
-- **DoD:** `docker compose up` works for everyone; API reachable; frontend shell navigable
-
-### 🟢 Days 3–5 — CRUD verticals
-- **A:** Seed data finalized (80–120 rows); start SQL recipes (trigger, procedure drafts)
-- **B:** Device CRUD, Need CRUD, Certification endpoint
-- **C:** Login/Register, Discover (list view), Donor + Seeker dashboards wired to real APIs
-- **DoD:** donor lists a device, seeker posts a need, verifier certifies — all persisted, all visible in UI
-
-### 🟠 Days 6–9 — The circulation loop (highest-risk block, front-loaded)
-- **B:** PostGIS `ST_DWithin` radius query + scoring CTE + `ROW_NUMBER()` window function; then the `safe_match()` transaction with `SELECT … FOR UPDATE` row locking
-- **A:** Trigger for `audit_log`; stored procedure `safe_to_transfer`; GiST index on geometry columns, B-tree on status/type_id
-- **C:** Match results UI (top-3 cards), Accept flow, map view on Discover page
-- **DoD:** full loop works end-to-end — list → certify → match → accept → transfer. **Explicitly test the double-claim race** (two seekers hit accept simultaneously) — this is the flagship demo moment.
-
-### 🟡 Days 10–13 — AI Assistant (dedicated block, not squeezed into the end)
-- **One member leads:** FastAPI service, LangChain few-shot setup against the 3–5 fixed query patterns, SELECT-only Postgres role, allowlist check before execution
-- **Other two:** continue in parallel — begin Transfer status endpoints, Feedback endpoint, re-list logic, Verifier Portal + Admin Panel UI
-- **DoD:** the 3–5 example questions reliably return correct results through the chat widget; write access is structurally blocked, not just prompt-blocked
-
-### 🟢 Days 14–16 — Admin, transfers, feedback loop
-- **B:** Transfer status endpoints, feedback endpoint, re-list logic (if not finished in the block above)
-- **A:** Aggregation queries, district-aggregate view, full-text search on device descriptions
-- **C:** Verifier Portal, Admin Panel, Transfer tracking UI, Feedback form
-
-### 🔵 Days 17–18 — Integration pass
-- Merge all branches, fix contract mismatches, re-seed clean data
-- Walk the full happy path together as a team, at least twice, including the double-claim demo
-
-### 🔵 Day 19 — Polish + docs
-- ER diagram, SQL recipes doc, final README, demo script (scripted click-path, not improvised)
-- Fix whatever breaks during dry-run demos
-
-### ⚪ Day 20 — Slack
-- Reserved, not pre-filled. Something breaks the day before a demo — this day exists to catch it.
-
-> **Rule for this plan:** if Days 6–9 slip, the AI Assistant block (10–13) shrinks to
-> absorb the overrun — not the integration pass or the slack day. The core loop is
-> non-negotiable; the AI assistant's scope is the pressure valve.
-
----
-
-## 👥 Team Workflow (3 Members)
-
-| Member | Ownership | Files touched | Git branch |
-|--------|-----------|---------------|------------|
-| **A — Data & DB** | Prisma schema, migrations, seed, SQL recipes (trigger/procedure/view), indexes | `prisma/**`, `docs/**` | `feat/schema` |
-| **B — Backend** | Express routes, auth, transactions, matching endpoints, AI service lead | `server/**`, `ai-service/**` | `feat/api` |
-| **C — Frontend** | React pages, dashboards, match UI | `client/**` | `feat/frontend` |
-
-**Git workflow**
-- One `main` + 3 feature branches; PRs on `main`.
-- Prisma migrations are committed → teammates just `git pull` + `docker compose up`.
-- API contract (request/response shapes) agreed up front in `docs/API.md`.
-- `.env.example` shared; real `.env` never committed.
-
-> **Why Docker here:** it eliminates the #1 real-team risk — environment divergence
-> between three machines — with a single `docker compose up`.
-
----
-
-## ⚙️ Installation & Setup
-
-> Prisma lives under `server/` (schema, migrations, seed, bootstrap all co-locate with the API).
+### 1. Clone Repository and Configure Environment
 
 ```bash
-# 1. Clone repo, copy env, install deps
-git clone <repo-url> divyasetu
-cd divyasetu
-cp .env.example .env        # fill DATABASE_URL etc.
-cd server && npm install
+git clone https://github.com/supergthe1269/DivyaSetu.git
+cd DivyaSetu
 
-# 2. Start PostgreSQL 16 + PostGIS  (needs Docker Desktop / Docker Engine)
-cd .. && docker compose up -d db
+# Create environment configuration
+cp .env.example .env
+```
 
-# 3. Enable PostGIS (no-op if the postgis image already enabled it), migrate, bootstrap, seed
+### 2. Start PostgreSQL with PostGIS
+
+```bash
+docker compose up -d db
+```
+
+### 3. Initialize Database and Seed Data
+
+```bash
 cd server
-npm run db:migrate          # prisma migrate dev  → creates the 11 tables
-npm run db:bootstrap        # psql -f prisma/bootstrap.sql → PostGIS ext, GiST, triggers, proc, view
-npm run db:seed             # prisma db seed → 24 devices / 10 needs in real districts
+npm install
 
-# 4. Start the backend
-npm run dev                 # → http://localhost:4000  (see /api/health)
+# Run migrations to generate tables
+npm run db:migrate
 
-# 5. Start the AI service (separate terminal)
-cd ../ai-service
-uvicorn main:app --reload --port 8488
+# Apply raw PostGIS triggers, stored procedures, and views
+npm run db:bootstrap
 
-# 6. Start the frontend
-cd ../client
-npm run dev                 # → http://localhost:5173
+# Seed realistic demonstration dataset
+npm run db:seed
 ```
 
-> **Prerequisite:** Docker Desktop (Windows/WSL2) or Docker Engine (Linux/macOS).
-> **Order matters:** migration → bootstrap → seed. `bootstrap.sql` adds the raw PostGIS
-> layer (geometry indexes, audit/geometry triggers, stored function, aggregate view)
-> that Prisma's schema cannot express, so run it before seeding.
+### 4. Run Application Services
 
----
+Launch the services in separate terminal windows:
 
-## ✂️ Cut Scope — Why These Are Gone
-
-Cutting these isn't a compromise — it's what makes a **finished** prototype possible
-in 20 days instead of a partially-working one in 20+.
-
-| Feature | Status | Why cut |
-|---------|--------|---------|
-| PostGIS + Docker | **Kept** | Core differentiator — locked in |
-| Scoped AI assistant | **Kept, narrowed** | 3–5 fixed query patterns instead of a general agent — see [AI Assistant](#-ai-assistant--scoped-for-reliability) |
-| Materialized view | Cut | A regular `VIEW` demonstrates the same concept with no refresh-staleness risk before a demo |
-| Row-Level Security (RLS) | Cut | App-layer role guards give the same practical access control with far less risk of a silent misconfiguration |
-| Progressive radius widening | Cut | Fixed radius still demonstrates `ST_DWithin` + GiST; widening adds branching logic, not a new concept |
-| Multilingual IVR / USSD / SMS | Cut | OTP stubbed as a simple mobile code |
-| Real courier / logistics integrations | Cut | Simulated via status updates |
-| Cloudinary image uploads | Cut | Image URLs used in the demo |
-| Native mobile app | Cut | Responsive web instead |
-| AI description summarizer / photo damage flag | Cut | Optional stretch goals with no DBMS grading value |
-
----
-
-## 📦 Deliverables
-
-- Responsive web app (React + Tailwind)
-- PostgreSQL + PostGIS schema (11 tables) demonstrating 14 load-bearing DBMS concepts
-- REST API (25+ endpoints)
-- Scoped natural-language → SQL AI assistant (read-only, structurally safe)
-- ER diagram + SQL recipes (transaction, trigger, procedure, view, window function)
-- Docker Compose reproducible dev environment
-- This README + demo script + presentation deck
-
----
-
-## 📄 License
-
-This project is developed for educational purposes as part of a **Database Management
-Systems (DBMS)** coursework.
-
+**Backend API Gateway:**
+```bash
+cd server
+npm run dev
+# Server listening at http://localhost:4000
 ```
-MIT License — Copyright (c) 2026
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files...
+
+**AI Analytical Service:**
+```bash
+cd ai-service
+pip install -r requirements.txt
+python -m uvicorn main:app --port 8488
+# AI Service listening at http://localhost:8488
+```
+
+**Frontend Client:**
+```bash
+cd client
+npm install
+npm run dev
+# Application accessible at http://localhost:5173
 ```
 
 ---
 
-<p align="center">
-  <b>Built with ❤️ as a DBMS Project</b><br>
-  <sub>React • Node.js • Express • PostgreSQL 16 + PostGIS • Prisma • Tailwind • FastAPI • LangChain</sub>
-</p>
+## License
 
-<p align="center">
-  <sub>Last Updated: September 2026 — 20-day finished-prototype plan</sub>
-</p>
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
