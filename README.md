@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="DivyaSetu Logo" width="220" style="border-radius: 12px;"/>
+  <img src="docs/assets/logo.png" alt="DivyaSetu Logo" width="160" style="border-radius: 16px;"/>
 </p>
 
 <h1 align="center">DivyaSetu (दिव्यसेतु)</h1>
