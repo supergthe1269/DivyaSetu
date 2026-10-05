@@ -320,6 +320,8 @@ divyasetu/
 
 ## Installation & Setup
 
+> For a complete, step-by-step onboarding walkthrough and troubleshooting tips for team members, see [`SETUP.md`](SETUP.md).
+
 ### Prerequisites
 - Node.js 18+ and npm
 - Python 3.10+
