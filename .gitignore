@@ -1,0 +1,18 @@
+# deps / build
+node_modules/
+dist/
+build/
+
+# env + secrets
+.env
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

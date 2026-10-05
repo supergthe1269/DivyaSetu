@@ -1,0 +1,257 @@
+// DivyaSetu — PostgreSQL 16 + PostGIS schema (11 tables)
+//
+// NOTE ON LAYOUT: Prisma lives in server/prisma (instead of a repo-root prisma/)
+// so the schema, migrations and seed co-locate with the backend that uses them.
+//
+// PostGIS strategy:
+//   - `devices.geometry` and `needs.geometry` are PostGIS points (Unsupported in Prisma).
+//   - The ORM-facing columns are plain `lat`/`lng` floats. A bootstrap trigger
+//     auto-sets geometry = ST_SetSRID(ST_MakePoint(lng, lat), 4326) on
+//     insert/update, so Prisma CRUD needs no raw SQL, while ST_DWithin radius
+//     queries (matching) still run natively in PostGIS.
+//   - See prisma/bootstrap.sql for the extension, GiST indexes, triggers,
+//     stored procedure and views (raw SQL Prisma cannot express).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums (check-constraint natures) ----------
+enum Role {
+  DONOR
+  SEEKER
+  VERIFIER
+  ADMIN
+}
+
+enum DeviceCategory {
+  WHEELCHAIR
+  HEARING_AID
+  CRUTCH
+  TRICYCLE
+  BRAILLE_KIT
+  PROSTHETIC
+}
+
+enum DeviceStatus {
+  AVAILABLE
+  CERTIFYING
+  MATCHED
+  IN_TRANSIT
+  DELIVERED
+  RE_LISTED
+}
+
+enum Verdict {
+  PENDING
+  SAFE
+  NOT_SAFE
+}
+
+enum MatchStatus {
+  PROPOSED
+  ACCEPTED
+  REJECTED
+  CLOSED
+}
+
+enum TransferStatus {
+  PLANNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+// ---------- 1. users ----------
+model User {
+  id              Int      @id @default(autoincrement())
+  name            String
+  mobile          String   @unique
+  passwordHash    String
+  role            Role     @default(DONOR)
+  language        String   @default("en")
+  disabilityType  String?
+  isApproved      Boolean  @default(false)
+  lat             Float?
+  lng             Float?
+  isDeleted       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  devices         Device[]
+  needs           Need[]
+  certifications  Certification[]
+  notifications   Notification[]
+  auditEntries    AuditLog[]       @relation("auditorActor")
+
+  @@index([role])
+  @@index([isApproved])
+}
+
+// ---------- 2. device_types (reference catalog) ----------
+model DeviceType {
+  id       Int      @id @default(autoincrement())
+  category DeviceCategory @unique
+  label    String   @unique
+  devices  Device[]
+}
+
+// ---------- 3. devices (asset + lifecycle ledger) ----------
+model Device {
+  id           Int           @id @default(autoincrement())
+  serial       String        @unique
+  donorId      Int
+  donor        User          @relation(fields: [donorId], references: [id])
+  typeId       Int
+  type         DeviceType    @relation(fields: [typeId], references: [id])
+  condition    String        @default("GOOD")
+  description  String
+  lat          Float?
+  lng          Float?
+  status       DeviceStatus  @default(AVAILABLE)
+  listedAt     DateTime      @default(now())
+  isDeleted    Boolean       @default(false)
+
+  // PostGIS/raw columns — maintained by bootstrap trigger / geo helper
+  geometry       Unsupported("geometry(Point,4326)")?
+  descriptionTsv Unsupported("tsvector")?
+
+  certifications Certification[]
+  matches        Match[]
+
+  @@index([typeId])
+  @@index([status])
+  @@index([donorId])
+}
+
+// ---------- 4. needs (demand requests) ----------
+model Need {
+  id            Int             @id @default(autoincrement())
+  seekerId      Int
+  seeker        User            @relation(fields: [seekerId], references: [id])
+  category      DeviceCategory
+  urgencyHours  Int             @default(168)
+  lat           Float?
+  lng           Float?
+  monthlyIncome Int?
+  status        DeviceStatus    @default(AVAILABLE)
+
+  geometry      Unsupported("geometry(Point,4326)")?
+
+  requests      Match[]
+
+  @@index([category])
+  @@index([status])
+  @@index([seekerId])
+}
+
+// ---------- 5. certifications (trust ledger) ----------
+model Certification {
+  id             Int      @id @default(autoincrement())
+  deviceId       Int
+  device         Device   @relation(fields: [deviceId], references: [id])
+  verifierId     Int
+  verifier       User     @relation(fields: [verifierId], references: [id])
+  verdict        Verdict  @default(PENDING)
+  notes          String?
+  certificateRef String?
+  inspectedAt    DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  @@index([deviceId])
+  @@index([verifierId])
+}
+
+// ---------- 6. matches (matching decisions + composite key) ----------
+model Match {
+  id        Int         @id @default(autoincrement())
+  deviceId  Int
+  device    Device      @relation(fields: [deviceId], references: [id])
+  needId    Int
+  need      Need        @relation(fields: [needId], references: [id])
+  score     Float       @default(0)
+  source    String      @default("GEO_SCORE")
+  status    MatchStatus @default(PROPOSED)
+  createdAt DateTime    @default(now())
+
+  transfers Transfer[]
+
+  @@unique([deviceId, needId]) // composite uniqueness guard
+  @@index([needId])
+  @@index([status])
+}
+
+// ---------- 7. transfers (the handover) ----------
+model Transfer {
+  id          Int            @id @default(autoincrement())
+  matchId     Int
+  match       Match          @relation(fields: [matchId], references: [id])
+  pickupAddr  String
+  dropoffAddr String
+  status      TransferStatus @default(PLANNED)
+  costPaisa   Int?
+  deliveredAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  feedback    Feedback?
+
+  @@index([matchId])
+}
+
+// ---------- 8. feedback (post-transfer + reuse intent) ----------
+model Feedback {
+  id          Int      @id @default(autoincrement())
+  transferId  Int      @unique
+  transfer    Transfer @relation(fields: [transferId], references: [id])
+  rating      Int      @default(5)
+  notes       String?
+  reListIntent Boolean @default(false)
+  createdAt   DateTime @default(now())
+}
+
+// ---------- 9. audit_log (immutable trust audit) ----------
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  tableName String
+  recordId  Int
+  action    String
+  payload   Json?
+  actorId   Int?
+  actor     User?    @relation("auditorActor", fields: [actorId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([tableName, recordId])
+  @@index([actorId])
+}
+
+// ---------- 10. otps (simple verification) ----------
+model Otp {
+  id        Int      @id @default(autoincrement())
+  mobile    String
+  code      String
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([mobile])
+}
+
+// ---------- 11. notifications ----------
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  type      String
+  payload   Json?
+  seen      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, seen])
+}
