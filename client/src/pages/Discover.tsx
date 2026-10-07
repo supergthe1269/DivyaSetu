@@ -145,8 +145,8 @@ export const Discover: React.FC = () => {
                 <span className="text-[11px] text-slate-400 font-medium">Search Radius</span>
               </div>
               <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                <span className="text-2xl font-extrabold text-teal-300 block">14</span>
-                <span className="text-[11px] text-slate-400 font-medium">DBMS Concepts</span>
+                <span className="text-2xl font-extrabold text-teal-300 block">16</span>
+                <span className="text-[11px] text-slate-400 font-medium">Regional Hubs</span>
               </div>
             </div>
           </div>
