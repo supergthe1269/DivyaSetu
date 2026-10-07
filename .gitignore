@@ -54,3 +54,7 @@ Thumbs.db
 
 # Local presentation & evaluation notes (not committed)
 JUDGES_DEMO_AND_VIVA_GUIDE.md
+PRESENTATION_SLIDES.md
+presentation.html
+generate_ppt.py
+*.pptx
