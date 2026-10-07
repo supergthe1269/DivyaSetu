@@ -19,6 +19,11 @@ import {
   BookOpen,
   Cpu
 } from 'lucide-react';
+import { 
+  ALL_INDIA_LOCATIONS, 
+  REGIONS, 
+  LOCATIONS_BY_REGION 
+} from '../data/locations';
 
 const CATEGORIES: { label: string; category: DeviceCategory; typeId: number; icon: React.FC<{ className?: string }> }[] = [
   { label: 'Standard Folding Wheelchair', category: 'WHEELCHAIR', typeId: 1, icon: Accessibility },
@@ -27,15 +32,6 @@ const CATEGORIES: { label: string; category: DeviceCategory; typeId: number; ico
   { label: 'Hand-Operated Mobility Tricycle', category: 'TRICYCLE', typeId: 4, icon: Bike },
   { label: 'Braille Slate & Stylus Kit', category: 'BRAILLE_KIT', typeId: 5, icon: BookOpen },
   { label: 'Below-Knee Prosthetic Leg', category: 'PROSTHETIC', typeId: 6, icon: Cpu },
-];
-
-const PRESET_PLACES = [
-  { name: 'Chennai — Vadapalani', lat: 13.0589, lng: 80.1839, district: 'Chennai' },
-  { name: 'Chennai — Mylapore', lat: 13.0029, lng: 80.2404, district: 'Chennai' },
-  { name: 'Chennai — Ambattur', lat: 13.0981, lng: 80.1476, district: 'Tiruvallur' },
-  { name: 'Chengalpattu — Pallavaram', lat: 12.985, lng: 80.169, district: 'Chengalpattu' },
-  { name: 'Madurai Central', lat: 9.9256, lng: 78.1198, district: 'Madurai' },
-  { name: 'Coimbatore Hub', lat: 11.0168, lng: 76.9558, district: 'Coimbatore' },
 ];
 
 export const DonorDashboard: React.FC = () => {
@@ -79,7 +75,7 @@ export const DonorDashboard: React.FC = () => {
     setSuccessMsg('');
 
     try {
-      const p = PRESET_PLACES[placeIndex];
+      const p = ALL_INDIA_LOCATIONS[placeIndex];
       const serial = `DS-${Math.floor(1000 + Math.random() * 9000)}`;
 
       await deviceApi.create({
@@ -232,10 +228,17 @@ export const DonorDashboard: React.FC = () => {
                   onChange={(e) => setPlaceIndex(Number(e.target.value))}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200/90 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all cursor-pointer"
                 >
-                  {PRESET_PLACES.map((p, idx) => (
-                    <option key={idx} value={idx}>
-                      {p.name} ({p.district})
-                    </option>
+                  {REGIONS.map(({ key, label }) => (
+                    <optgroup key={key} label={label}>
+                      {LOCATIONS_BY_REGION[key].map((p) => {
+                        const idx = ALL_INDIA_LOCATIONS.findIndex((item) => item.name === p.name);
+                        return (
+                          <option key={idx} value={idx}>
+                            {p.name} ({p.state})
+                          </option>
+                        );
+                      })}
+                    </optgroup>
                   ))}
                 </select>
               </div>

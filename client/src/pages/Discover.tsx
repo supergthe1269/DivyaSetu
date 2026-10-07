@@ -22,6 +22,12 @@ import {
   Cpu,
   Layers
 } from 'lucide-react';
+import { 
+  ALL_INDIA_LOCATIONS, 
+  REGIONS, 
+  LOCATIONS_BY_REGION, 
+  LocationNode 
+} from '../data/locations';
 
 const CATEGORIES: { label: string; value: DeviceCategory | 'ALL'; icon: React.FC<{ className?: string }> }[] = [
   { label: 'All Equipment', value: 'ALL', icon: Compass },
@@ -33,15 +39,6 @@ const CATEGORIES: { label: string; value: DeviceCategory | 'ALL'; icon: React.FC
   { label: 'Prosthetics', value: 'PROSTHETIC', icon: Cpu },
 ];
 
-const PRESET_LOCATIONS = [
-  { name: 'Chennai Central', lat: 13.0827, lng: 80.2707, district: 'Chennai' },
-  { name: 'Vadapalani', lat: 13.0589, lng: 80.1839, district: 'Chennai' },
-  { name: 'Mylapore', lat: 13.0029, lng: 80.2404, district: 'Chennai' },
-  { name: 'Ambattur', lat: 13.0981, lng: 80.1476, district: 'Tiruvallur' },
-  { name: 'Madurai', lat: 9.9256, lng: 78.1198, district: 'Madurai' },
-  { name: 'Bengaluru', lat: 12.9716, lng: 77.5946, district: 'Bengaluru Urban' },
-];
-
 export const Discover: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [needs, setNeeds] = useState<Need[]>([]);
@@ -50,7 +47,7 @@ export const Discover: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState<DeviceCategory | 'ALL'>('ALL');
   const [radiusKm, setRadiusKm] = useState<number>(50);
-  const [selectedLoc, setSelectedLoc] = useState(PRESET_LOCATIONS[0]);
+  const [selectedLoc, setSelectedLoc] = useState<LocationNode>(ALL_INDIA_LOCATIONS[0]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -145,8 +142,8 @@ export const Discover: React.FC = () => {
                 <span className="text-[11px] text-slate-400 font-medium">Search Radius</span>
               </div>
               <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                <span className="text-2xl font-extrabold text-teal-300 block">16</span>
-                <span className="text-[11px] text-slate-400 font-medium">Regional Hubs</span>
+                <span className="text-2xl font-extrabold text-teal-300 block">{ALL_INDIA_LOCATIONS.length}</span>
+                <span className="text-[11px] text-slate-400 font-medium">Pan-India Hubs</span>
               </div>
             </div>
           </div>
@@ -173,20 +170,24 @@ export const Discover: React.FC = () => {
 
           {/* 2. Anchor Location Selector */}
           <div className="flex items-center gap-2">
-            <div className="relative w-full sm:w-52">
+            <div className="relative w-full sm:w-64">
               <MapPin className="w-4 h-4 text-sky-600 absolute left-3 top-3.5 pointer-events-none" />
               <select
                 value={selectedLoc.name}
                 onChange={(e) => {
-                  const loc = PRESET_LOCATIONS.find((l) => l.name === e.target.value);
+                  const loc = ALL_INDIA_LOCATIONS.find((l) => l.name === e.target.value);
                   if (loc) setSelectedLoc(loc);
                 }}
                 className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200/90 rounded-xl text-xs sm:text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all cursor-pointer"
               >
-                {PRESET_LOCATIONS.map((loc) => (
-                  <option key={loc.name} value={loc.name}>
-                    {loc.name} ({loc.district})
-                  </option>
+                {REGIONS.map(({ key, label }) => (
+                  <optgroup key={key} label={label}>
+                    {LOCATIONS_BY_REGION[key].map((loc) => (
+                      <option key={loc.name} value={loc.name}>
+                        {loc.name} ({loc.state})
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
@@ -203,7 +204,7 @@ export const Discover: React.FC = () => {
               <input
                 type="range"
                 min={10}
-                max={200}
+                max={500}
                 step={10}
                 value={radiusKm}
                 onChange={(e) => setRadiusKm(Number(e.target.value))}

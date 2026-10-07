@@ -15,6 +15,11 @@ import {
   Zap,
   DollarSign
 } from 'lucide-react';
+import { 
+  ALL_INDIA_LOCATIONS, 
+  REGIONS, 
+  LOCATIONS_BY_REGION 
+} from '../data/locations';
 
 const CATEGORIES: { label: string; value: DeviceCategory }[] = [
   { label: 'Standard Folding Wheelchair', value: 'WHEELCHAIR' },
@@ -23,14 +28,6 @@ const CATEGORIES: { label: string; value: DeviceCategory }[] = [
   { label: 'Hand-Operated Mobility Tricycle', value: 'TRICYCLE' },
   { label: 'Braille Slate & Stylus Kit', value: 'BRAILLE_KIT' },
   { label: 'Below-Knee Prosthetic Leg', value: 'PROSTHETIC' },
-];
-
-const PRESET_PLACES = [
-  { name: 'Chennai — Mylapore', lat: 13.0029, lng: 80.2404, district: 'Chennai' },
-  { name: 'Chennai — Vadapalani', lat: 13.0589, lng: 80.1839, district: 'Chennai' },
-  { name: 'Chennai — Ambattur', lat: 13.0981, lng: 80.1476, district: 'Tiruvallur' },
-  { name: 'Chengalpattu — Pallavaram', lat: 12.985, lng: 80.169, district: 'Chengalpattu' },
-  { name: 'Madurai Central', lat: 9.9256, lng: 78.1198, district: 'Madurai' },
 ];
 
 export const SeekerDashboard: React.FC = () => {
@@ -91,7 +88,7 @@ export const SeekerDashboard: React.FC = () => {
   const handleCreateNeed = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const p = PRESET_PLACES[placeIndex];
+      const p = ALL_INDIA_LOCATIONS[placeIndex];
       const res = await needApi.create({
         category,
         urgencyHours,
@@ -452,10 +449,17 @@ export const SeekerDashboard: React.FC = () => {
                   onChange={(e) => setPlaceIndex(Number(e.target.value))}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 cursor-pointer"
                 >
-                  {PRESET_PLACES.map((p, idx) => (
-                    <option key={idx} value={idx}>
-                      {p.name} ({p.district})
-                    </option>
+                  {REGIONS.map(({ key, label }) => (
+                    <optgroup key={key} label={label}>
+                      {LOCATIONS_BY_REGION[key].map((p) => {
+                        const idx = ALL_INDIA_LOCATIONS.findIndex((item) => item.name === p.name);
+                        return (
+                          <option key={idx} value={idx}>
+                            {p.name} ({p.state})
+                          </option>
+                        );
+                      })}
+                    </optgroup>
                   ))}
                 </select>
               </div>
