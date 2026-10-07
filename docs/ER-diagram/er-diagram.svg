@@ -581,7 +581,7 @@
     <rect width="800" height="490" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
     <path d="M 0 10 Q 0 0 10 0 L 790 0 Q 800 0 800 10 L 800 36 L 0 36 Z" fill="#EEF2FF"/>
     <line x1="0" y1="36" x2="800" y2="36" stroke="#C7D2FE" stroke-width="1.5"/>
-    <text x="20" y="24" font-size="14" font-weight="700" fill="#3730A3">PostgreSQL 16 + PostGIS Engine Features (DBMS Viva Focus)</text>
+    <text x="20" y="24" font-size="14" font-weight="700" fill="#3730A3">PostgreSQL 16 + PostGIS Engine Features</text>
 
     <g transform="translate(24, 55)" font-size="12">
       <text x="0" y="14" font-weight="700" fill="#4338CA">1. Geospatial Engine (PostGIS 3.4)</text>
