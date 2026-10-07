@@ -51,3 +51,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Local presentation & evaluation notes (not committed)
+JUDGES_DEMO_AND_VIVA_GUIDE.md
