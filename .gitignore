@@ -58,3 +58,7 @@ PRESENTATION_SLIDES.md
 presentation.html
 generate_ppt.py
 *.pptx
+generate_er_diagram.py
+divyasetu_er_diagram.svg
+divyasetu_er_diagram.html
+DivyaSetu_ER_Diagram.png
