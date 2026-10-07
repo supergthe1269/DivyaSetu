@@ -52,7 +52,8 @@ Thumbs.db
 *.swp
 *.swo
 
-# Local presentation & evaluation notes (not committed)
+# Local presentation & evaluation notes (kept local, not committed)
+evaluation-materials/
 JUDGES_DEMO_AND_VIVA_GUIDE.md
 PRESENTATION_SLIDES.md
 presentation.html
