@@ -66,7 +66,7 @@ Persons with disabilities across India who require mobility, hearing, or vision 
 
 ## Abstract
 
-DivyaSetu (दिव्यसेतु — "Divine Bridge") is a full-stack assistive technology platform engineered to manage the entire redistribution lifecycle:
+DivyaSetu (दिव्यसेतु — "Divine Bridge") is a full stack assistive technology platform engineered to manage the entire redistribution lifecycle:
 
 1. **Donation Intake**: Donors register idle assistive assets with specifications, location coordinates, and operational history.
 2. **Quality Certification**: Verified technical inspectors evaluate devices against standardized safety guidelines (`SAFE` / `NOT_SAFE`).
