@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
             </p>
             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
               <MapPin className="w-3.5 h-3.5 text-slate-400" />
-              <span>Multi-district telemetry active across 16 Indian districts</span>
+              <span>Pan-India spatial telemetry active across 52 regional hubs in 6 zones</span>
             </div>
           </div>
 

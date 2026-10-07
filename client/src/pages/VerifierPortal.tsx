@@ -32,16 +32,17 @@ export const VerifierPortal: React.FC = () => {
   const fetchQueue = async () => {
     setLoading(true);
     try {
-      const devRes = await deviceApi.list();
-      const allDevs = devRes.data.devices || [];
-      const needsInspection = allDevs.filter(
-        (d: Device) => d.status === 'CERTIFYING' || !d.certifications?.some((c) => c.verdict === 'SAFE')
-      );
-      setQueue(needsInspection.length > 0 ? needsInspection : allDevs.slice(0, 6));
+      const devRes = await deviceApi.pendingInspection();
+      const needsInspection = devRes.data.devices || [];
       if (needsInspection.length > 0) {
+        setQueue(needsInspection);
         setSelectedDevice(needsInspection[0]);
-      } else if (allDevs.length > 0) {
-        setSelectedDevice(allDevs[0]);
+      } else {
+        // Fallback: if queue is clear, load general list so verifier can review recently certified units
+        const allRes = await deviceApi.list();
+        const allDevs = allRes.data.devices || [];
+        setQueue(allDevs.slice(0, 10));
+        if (allDevs.length > 0) setSelectedDevice(allDevs[0]);
       }
     } catch (e) {
       console.error('Failed to load certification queue', e);

@@ -6,7 +6,7 @@ import { config } from "../config/index.js";
 
 const router = Router();
 
-// POST /api/devices — DONOR lists a new device (backfills geometry after insert)
+// POST /api/devices — DONOR lists a new device (routes to CERTIFYING queue & creates PENDING cert)
 router.post("/", requireAuth, requireRole("DONOR"), async (req: AuthedRequest, res, next) => {
   try {
     const uid = (req.user as any).id;
@@ -23,10 +23,24 @@ router.post("/", requireAuth, requireRole("DONOR"), async (req: AuthedRequest, r
         description: b.description,
         lat: b.lat,
         lng: b.lng,
-        status: "AVAILABLE",
+        status: "CERTIFYING", // awaiting verification
       },
       include: { type: true },
     });
+
+    // Create an initial PENDING certification entry for verifiers
+    const firstVerifier = await prisma.user.findFirst({ where: { role: "VERIFIER" } });
+    if (firstVerifier) {
+      await prisma.certification.create({
+        data: {
+          deviceId: device.id,
+          verifierId: firstVerifier.id,
+          verdict: "PENDING",
+          notes: "Awaiting physical and mechanical safety inspection.",
+          certificateRef: `PENDING-${device.id}`,
+        },
+      });
+    }
 
     // Backfill the PostGIS point (idempotent) for this device
     if (b.lat != null && b.lng != null) {
@@ -43,9 +57,118 @@ router.post("/", requireAuth, requireRole("DONOR"), async (req: AuthedRequest, r
   }
 });
 
-// GET /api/devices — list certified, available devices.
-//   ?lat= &lng= &radius= → returns nearest N within radius (km), PostGIS-ranked.
-//   Otherwise returns the most recent available devices.
+// GET /api/devices/my — returns all devices owned by the authenticated donor in ANY lifecycle status
+router.get("/my", requireAuth, async (req: AuthedRequest, res, next) => {
+  try {
+    const uid = (req.user as any).id;
+    const role = (req.user as any).role;
+    const where = role === "ADMIN" ? { isDeleted: false } : { donorId: uid, isDeleted: false };
+
+    const devices = await prisma.device.findMany({
+      where,
+      include: {
+        type: true,
+        certifications: { orderBy: { createdAt: "desc" } },
+        matches: {
+          include: {
+            need: { select: { id: true, category: true, urgencyHours: true, lat: true, lng: true } },
+            transfers: { orderBy: { createdAt: "desc" }, take: 1 },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+      orderBy: { listedAt: "desc" },
+    });
+    res.json({ devices });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// GET /api/devices/pending-inspection — queue of devices awaiting verifier certification
+router.get("/pending-inspection", requireAuth, requireRole("VERIFIER", "ADMIN"), async (_req, res, next) => {
+  try {
+    const devices = await prisma.device.findMany({
+      where: {
+        isDeleted: false,
+        OR: [
+          { status: "CERTIFYING" },
+          { certifications: { none: { verdict: "SAFE" } } },
+        ],
+      },
+      include: {
+        type: true,
+        donor: { select: { id: true, name: true, mobile: true, lat: true, lng: true } },
+        certifications: { orderBy: { createdAt: "desc" } },
+      },
+      orderBy: { listedAt: "desc" },
+      take: 50,
+    });
+    res.json({ devices });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// GET /api/devices/track/:identifier — comprehensive lifecycle tracking & audit history for a device
+router.get("/track/:identifier", requireAuth, async (req, res, next) => {
+  try {
+    const raw = String(req.params.identifier).trim();
+    const isNum = /^\d+$/.test(raw);
+    const where = isNum
+      ? { id: Number(raw) }
+      : { serial: { equals: raw, mode: "insensitive" as const } };
+
+    const device = await prisma.device.findFirst({
+      where,
+      include: {
+        type: true,
+        donor: { select: { id: true, name: true, mobile: true, lat: true, lng: true } },
+        certifications: {
+          include: { verifier: { select: { id: true, name: true } } },
+          orderBy: { createdAt: "desc" },
+        },
+        matches: {
+          include: {
+            need: {
+              include: {
+                seeker: { select: { id: true, name: true, mobile: true, disabilityType: true } },
+              },
+            },
+            transfers: {
+              include: { feedback: true },
+              orderBy: { createdAt: "desc" },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+
+    if (!device) {
+      return next(Object.assign(new Error(`Device not found with serial/ID '${raw}'`), { status: 404 }));
+    }
+
+    // Retrieve full immutable audit history for this device
+    const auditLogs = await prisma.auditLog.findMany({
+      where: {
+        OR: [
+          { tableName: "Device", recordId: device.id },
+          { tableName: "Certification", recordId: { in: device.certifications.map((c) => c.id) } },
+        ],
+      },
+      include: { actor: { select: { id: true, name: true, role: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+    });
+
+    res.json({ device, auditLogs });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// GET /api/devices — list certified, available devices for Discover & Public exploration
 router.get("/", requireAuth, async (req, res, next) => {
   try {
     const lat = req.query.lat ? Number(req.query.lat) : null;
@@ -55,7 +178,11 @@ router.get("/", requireAuth, async (req, res, next) => {
     if (lat === null || lng === null) {
       const devices = await prisma.device.findMany({
         where: { status: "AVAILABLE", isDeleted: false, certifications: { some: { verdict: "SAFE" } } },
-        include: { type: true },
+        include: { 
+          type: true,
+          certifications: { where: { verdict: "SAFE" }, take: 1 },
+          donor: { select: { id: true, name: true } }
+        },
         orderBy: { listedAt: "desc" },
         take: 50,
       });
@@ -74,7 +201,14 @@ router.get("/", requireAuth, async (req, res, next) => {
     );
     const ids = (rows as { device_id: number }[]).map((r) => r.device_id);
     const devices = ids.length
-      ? await prisma.device.findMany({ where: { id: { in: ids } }, include: { type: true } })
+      ? await prisma.device.findMany({ 
+          where: { id: { in: ids } }, 
+          include: { 
+            type: true,
+            certifications: { where: { verdict: "SAFE" }, take: 1 },
+            donor: { select: { id: true, name: true } }
+          } 
+        })
       : [];
     res.json({ devices, distancesKm: rows });
   } catch (e) {

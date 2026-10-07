@@ -15,7 +15,8 @@ import {
   Home,
   CheckCircle2,
   ChevronDown,
-  X
+  X,
+  Compass
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -29,6 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
 
   const navItems = [
     { label: 'Discover', path: '/', icon: Search, roles: ['DONOR', 'SEEKER', 'VERIFIER', 'ADMIN'] },
+    { label: 'Track & Trace', path: '/track', icon: Compass, roles: ['DONOR', 'SEEKER', 'VERIFIER', 'ADMIN'] },
     { label: 'Donor Hub', path: '/donor', icon: PlusCircle, roles: ['DONOR', 'ADMIN'] },
     { label: 'Seeker Hub', path: '/seeker', icon: UserCheck, roles: ['SEEKER', 'ADMIN'] },
     { label: 'Verifier Portal', path: '/verifier', icon: ShieldAlert, roles: ['VERIFIER', 'ADMIN'] },

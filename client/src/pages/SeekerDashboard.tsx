@@ -3,6 +3,7 @@ import { needApi, matchApi } from '../api/client';
 import { Need, Match, DeviceCategory } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { StatusBadge } from '../components/StatusBadge';
+import { Link } from 'react-router-dom';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -13,7 +14,8 @@ import {
   Activity,
   AlertCircle,
   Zap,
-  DollarSign
+  DollarSign,
+  Compass
 } from 'lucide-react';
 import { 
   ALL_INDIA_LOCATIONS, 
@@ -47,13 +49,17 @@ export const SeekerDashboard: React.FC = () => {
   const [placeIndex, setPlaceIndex] = useState<number>(0);
   const [monthlyIncome, setMonthlyIncome] = useState<number>(8500);
 
-  const fetchNeeds = async () => {
+  const fetchNeeds = async (preferredNeedId?: number) => {
     setLoading(true);
     try {
       const res = await needApi.list();
       const allNeeds = res.data.needs || [];
       setNeeds(allNeeds);
-      if (allNeeds.length > 0 && !selectedNeed) {
+      if (preferredNeedId) {
+        const found = allNeeds.find((n: Need) => n.id === preferredNeedId);
+        if (found) setSelectedNeed(found);
+        else if (allNeeds.length > 0) setSelectedNeed(allNeeds[0]);
+      } else if (!selectedNeed && allNeeds.length > 0) {
         setSelectedNeed(allNeeds[0]);
       }
     } catch (e) {
@@ -96,15 +102,17 @@ export const SeekerDashboard: React.FC = () => {
         lng: p.lng,
         monthlyIncome,
       });
+      const createdNeed = res.data.need;
       setBannerMsg({ 
         type: 'success', 
-        text: 'Accessibility request registered successfully! Running PostGIS multi-criteria ranking...' 
+        text: `Accessibility request #${createdNeed?.id ?? ''} registered! Running PostGIS multi-criteria ranking...` 
       });
       setShowNeedModal(false);
-      fetchNeeds();
-      if (res.data.need) {
-        setSelectedNeed(res.data.need);
+      if (createdNeed) {
+        setSelectedNeed(createdNeed);
+        runMatching(createdNeed.id);
       }
+      fetchNeeds(createdNeed?.id);
     } catch (err: any) {
       setBannerMsg({
         type: 'error',
@@ -231,7 +239,17 @@ export const SeekerDashboard: React.FC = () => {
                           {n.category.replace('_', ' ')}
                         </h3>
                       </div>
-                      <StatusBadge status={n.status} size="sm" />
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/track?needId=${n.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="btn-press text-[11px] font-bold text-sky-700 hover:text-sky-900 flex items-center gap-1 bg-white px-2 py-0.5 rounded-lg border border-slate-200/80 shadow-2xs"
+                        >
+                          <Compass className="w-3 h-3 text-sky-600" />
+                          <span>Track</span>
+                        </Link>
+                        <StatusBadge status={n.status} size="sm" />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 pt-2 border-t border-slate-100/80 w-full">

@@ -57,3 +57,35 @@ FROM ranked
 WHERE rnk <= $3::int
 ORDER BY score DESC, dist_km ASC
 `;
+
+/** Fallback query if no devices exist within the local radius: matches closest nationwide. */
+export const MATCH_CANDIDATES_EXPANDED_SQL = `
+WITH geo AS (
+  SELECT id AS need_id, geometry AS need_geom, category AS need_cat, urgency_hours
+  FROM needs
+  WHERE id = $1::int
+),
+candidates AS (
+  SELECT
+    d.id                                              AS device_id,
+    n.need_id                                         AS need_id,
+    n.urgency_hours,
+    ST_Distance(n.need_geom, d.geometry) / 1000.0     AS dist_km,
+    0.6 * (1.0 - least(ST_Distance(n.need_geom, d.geometry) / 1000.0 / 2500.0, 1.0))
+      + 0.3 * (1.0 - exp(-n.urgency_hours::float / 168.0))
+      + 0.1 * CASE WHEN d.condition = 'EXCELLENT' THEN 1.0 ELSE 0.5 END AS score
+  FROM geo n
+  CROSS JOIN devices d
+  WHERE d.status = 'AVAILABLE'
+    AND d.type_id = (SELECT id FROM device_types WHERE category = n.need_cat)
+    AND d.is_deleted = false
+),
+ranked AS (
+  SELECT *, DENSE_RANK() OVER (ORDER BY score DESC, dist_km ASC) AS rnk
+  FROM candidates
+)
+SELECT device_id, need_id, round(dist_km::numeric, 1)::float AS dist_km, round(score::numeric, 3)::float AS score
+FROM ranked
+WHERE rnk <= $2::int
+ORDER BY score DESC, dist_km ASC
+`;

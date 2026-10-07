@@ -11,6 +11,7 @@ import { VerifierPortal } from './pages/VerifierPortal';
 import { AdminPanel } from './pages/AdminPanel';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { TrackTrace } from './pages/TrackTrace';
 
 export const App: React.FC = () => {
   const [isAIOpen, setIsAIOpen] = useState(false);
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
           <Route path="/seeker" element={<SeekerDashboard />} />
           <Route path="/verifier" element={<VerifierPortal />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/track" element={<TrackTrace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

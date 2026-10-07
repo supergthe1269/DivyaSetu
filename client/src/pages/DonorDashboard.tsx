@@ -17,7 +17,8 @@ import {
   Milestone,
   Bike,
   BookOpen,
-  Cpu
+  Cpu,
+  Compass
 } from 'lucide-react';
 import { 
   ALL_INDIA_LOCATIONS, 
@@ -51,11 +52,8 @@ export const DonorDashboard: React.FC = () => {
   const fetchMyDevices = async () => {
     setLoading(true);
     try {
-      const res = await deviceApi.list();
-      const myDevs = (res.data.devices || []).filter(
-        (d: Device) => !user || d.donorId === user.id || user.role === 'ADMIN'
-      );
-      setDevices(myDevs);
+      const res = await deviceApi.myDevices();
+      setDevices(res.data.devices || []);
     } catch (e) {
       console.error('Failed to load donor devices', e);
     } finally {
@@ -335,10 +333,17 @@ export const DonorDashboard: React.FC = () => {
 
                   <div className="flex items-center gap-2 self-end sm:self-center">
                     <Link
+                      to={`/track?serial=${dev.serial}`}
+                      className="btn-press px-3.5 py-2 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs"
+                    >
+                      <Compass className="w-3.5 h-3.5 text-sky-600" />
+                      <span>Track Journey</span>
+                    </Link>
+                    <Link
                       to={`/devices/${dev.id}`}
                       className="btn-press px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs"
                     >
-                      <span>Digital Ledger</span>
+                      <span>Ledger</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>

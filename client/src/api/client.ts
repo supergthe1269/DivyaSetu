@@ -27,6 +27,9 @@ export const authApi = {
 export const deviceApi = {
   list: (params?: { lat?: number; lng?: number; radius?: number }) =>
     api.get('/devices', { params }),
+  myDevices: () => api.get('/devices/my'),
+  pendingInspection: () => api.get('/devices/pending-inspection'),
+  track: (identifier: string | number) => api.get(`/devices/track/${identifier}`),
   getMatches: (id: number) => api.get(`/devices/${id}/matches`),
   create: (data: {
     serial: string;
@@ -41,6 +44,8 @@ export const deviceApi = {
 // Needs endpoints
 export const needApi = {
   list: () => api.get('/needs'),
+  myNeeds: () => api.get('/needs/my'),
+  track: (id: number) => api.get(`/needs/track/${id}`),
   create: (data: {
     category: string;
     urgencyHours?: number;
@@ -54,6 +59,7 @@ export const needApi = {
 export const matchApi = {
   generate: (needId: number, limit?: number) =>
     api.post('/matches/generate', { needId, limit }),
+  forNeed: (needId: number) => api.get(`/matches/for-need/${needId}`),
   accept: (id: number) => api.post(`/matches/${id}/accept`),
 };
 
