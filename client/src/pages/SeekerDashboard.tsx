@@ -4,10 +4,16 @@ import { Need, Match, DeviceCategory } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { StatusBadge } from '../components/StatusBadge';
 import { 
-  HeartHandshake, 
   Sparkles, 
   CheckCircle2, 
-  Lock
+  Lock,
+  PlusCircle,
+  MapPin,
+  Clock,
+  Activity,
+  AlertCircle,
+  Zap,
+  DollarSign
 } from 'lucide-react';
 
 const CATEGORIES: { label: string; value: DeviceCategory }[] = [
@@ -20,11 +26,11 @@ const CATEGORIES: { label: string; value: DeviceCategory }[] = [
 ];
 
 const PRESET_PLACES = [
-  { name: 'Chennai — Mylapore', lat: 13.0029, lng: 80.2404 },
-  { name: 'Chennai — Vadapalani', lat: 13.0589, lng: 80.1839 },
-  { name: 'Chennai — Ambattur', lat: 13.0981, lng: 80.1476 },
-  { name: 'Chengalpattu — Pallavaram', lat: 12.985, lng: 80.169 },
-  { name: 'Madurai', lat: 9.9256, lng: 78.1198 },
+  { name: 'Chennai — Mylapore', lat: 13.0029, lng: 80.2404, district: 'Chennai' },
+  { name: 'Chennai — Vadapalani', lat: 13.0589, lng: 80.1839, district: 'Chennai' },
+  { name: 'Chennai — Ambattur', lat: 13.0981, lng: 80.1476, district: 'Tiruvallur' },
+  { name: 'Chengalpattu — Pallavaram', lat: 12.985, lng: 80.169, district: 'Chengalpattu' },
+  { name: 'Madurai Central', lat: 9.9256, lng: 78.1198, district: 'Madurai' },
 ];
 
 export const SeekerDashboard: React.FC = () => {
@@ -35,6 +41,8 @@ export const SeekerDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [matchingLoading, setMatchingLoading] = useState(false);
   const [claimingMatchId, setClaimingMatchId] = useState<number | null>(null);
+  const [bannerMsg, setBannerMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showNeedModal, setShowNeedModal] = useState(false);
 
   // Need Form State
   const [category, setCategory] = useState<DeviceCategory>('WHEELCHAIR');
@@ -62,7 +70,6 @@ export const SeekerDashboard: React.FC = () => {
     fetchNeeds();
   }, [user]);
 
-  // When selectedNeed changes, run or fetch candidate matches
   useEffect(() => {
     if (selectedNeed) {
       runMatching(selectedNeed.id);
@@ -92,267 +99,397 @@ export const SeekerDashboard: React.FC = () => {
         lng: p.lng,
         monthlyIncome,
       });
-      alert('Demand request created successfully! Running geospatial matching...');
+      setBannerMsg({ 
+        type: 'success', 
+        text: 'Accessibility request registered successfully! Running PostGIS multi-criteria ranking...' 
+      });
+      setShowNeedModal(false);
       fetchNeeds();
       if (res.data.need) {
         setSelectedNeed(res.data.need);
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to submit request');
+      setBannerMsg({
+        type: 'error',
+        text: err.response?.data?.error || 'Failed to submit demand request'
+      });
     }
   };
 
   const handleAcceptMatch = async (matchId: number) => {
     setClaimingMatchId(matchId);
+    setBannerMsg(null);
     try {
       await matchApi.accept(matchId);
-      alert('✅ Match Accepted! Device has been locked with ACID Row-Level Locking (SELECT FOR UPDATE) and transferred to IN_TRANSIT.');
-      if (selectedNeed) runMatching(selectedNeed.id);
+      setBannerMsg({
+        type: 'success',
+        text: 'Transaction committed! Device claimed successfully via ACID row-level lock (SELECT FOR UPDATE). Double-allocation prevented.'
+      });
+      if (selectedNeed) {
+        runMatching(selectedNeed.id);
+      }
       fetchNeeds();
     } catch (err: any) {
-      const msg = err.response?.data?.error || 'Claim failed';
-      alert(`⚠️ ACID Concurrency Guard: ${msg}`);
+      setBannerMsg({
+        type: 'error',
+        text: err.response?.data?.error || 'Transaction rollback: Device was claimed concurrently or is no longer available.'
+      });
     } finally {
       setClaimingMatchId(null);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Welcome Header */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 pb-safe">
+      
+      {/* =========================================================================
+          PAGE HEADER & ACTIONS
+         ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Seeker Demand & Geo-Matching Hub
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200/80 px-2.5 py-0.5 rounded-full">
+              Beneficiary Matching Engine
+            </span>
+            <span className="text-xs text-slate-400">PostgreSQL ACID Row Locks</span>
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Assistive Device Allocation Hub
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Post urgent assistive needs and receive PostGIS-ranked device matches with guaranteed ACID allocation.
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
+            Submit emergency mobility requirements, inspect PostGIS candidate rankings computed via window functions, and claim units with zero race condition risk.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-sky-50 text-sky-800 rounded-lg border border-sky-200 text-xs font-semibold">
-          <Sparkles className="w-4 h-4 text-sky-600" />
-          <span>PostGIS Radius + Window Ranking Active</span>
-        </div>
+        <button
+          onClick={() => setShowNeedModal(true)}
+          className="btn-press flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-soft hover:shadow-glow-sky transition-all self-start sm:self-auto"
+        >
+          <PlusCircle className="w-4 h-4" />
+          <span>Post New Need</span>
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Post Need Form (Left Column) */}
-        <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
-          <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
-            <div className="p-2 bg-amber-50 text-amber-600 rounded-lg">
-              <HeartHandshake className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Request Assistive Device</h2>
-              <p className="text-[11px] text-slate-400">Specify required category and urgency</p>
-            </div>
+      {/* Global Notification Banner */}
+      {bannerMsg && (
+        <div
+          className={`p-4 rounded-2xl border text-xs font-semibold flex items-start gap-3 shadow-2xs animate-in fade-in ${
+            bannerMsg.type === 'success'
+              ? 'bg-emerald-50/95 text-emerald-900 border-emerald-200/90'
+              : 'bg-rose-50/95 text-rose-900 border-rose-200/90'
+          }`}
+        >
+          {bannerMsg.type === 'success' ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          )}
+          <div className="leading-relaxed">{bannerMsg.text}</div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          WORKSPACE: MASTER-DETAIL INTERACTION
+         ========================================================================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* LEFT COLUMN: ACTIVE NEEDS LIST */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-base font-bold text-slate-900 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-sky-600" />
+              <span>Active Demand Requests ({needs.length})</span>
+            </h2>
           </div>
 
-          <form onSubmit={handleCreateNeed} className="space-y-4">
-            {/* Category */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Required Equipment
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as DeviceCategory)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
+          {loading ? (
+            <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
+              Loading requests...
             </div>
+          ) : needs.length > 0 ? (
+            <div className="space-y-3">
+              {needs.map((n) => {
+                const isSelected = selectedNeed?.id === n.id;
+                return (
+                  <button
+                    key={n.id}
+                    onClick={() => setSelectedNeed(n)}
+                    className={`btn-press w-full text-left p-5 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-sky-50/90 border-sky-400 ring-2 ring-sky-500/20 shadow-soft'
+                        : 'bg-white border-slate-200/90 hover:border-slate-300 shadow-card'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between w-full gap-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-slate-400">
+                            Need #{n.id}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                            {n.category}
+                          </span>
+                        </div>
+                        <h3 className="font-display text-base font-bold text-slate-900 mt-1">
+                          {n.category.replace('_', ' ')}
+                        </h3>
+                      </div>
+                      <StatusBadge status={n.status} size="sm" />
+                    </div>
 
-            {/* Urgency */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Urgency Window (Hours to Critical Need)
-              </label>
-              <select
-                value={urgencyHours}
-                onChange={(e) => setUrgencyHours(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-              >
-                <option value={12}>Critical — Post-injury / Surgery (12 hrs)</option>
-                <option value={24}>High Urgency (24 hrs)</option>
-                <option value={48}>Moderate Urgency (48 hrs)</option>
-                <option value={168}>Standard Demand (7 days)</option>
-              </select>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 pt-2 border-t border-slate-100/80 w-full">
+                      <div className="flex items-center gap-1.5 font-medium">
+                        <Zap className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Urgency: <strong>{n.urgencyHours}h window</strong></span>
+                      </div>
+                      <div className="flex items-center gap-1.5 font-medium justify-end">
+                        <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Income: ₹{n.monthlyIncome}</span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
-
-            {/* Location Node */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Beneficiary Location
-              </label>
-              <select
-                value={placeIndex}
-                onChange={(e) => setPlaceIndex(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-              >
-                {PRESET_PLACES.map((p, idx) => (
-                  <option key={idx} value={idx}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+          ) : (
+            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/90 space-y-3 shadow-card">
+              <Clock className="w-10 h-10 text-slate-300 mx-auto" />
+              <h3 className="font-display font-bold text-base text-slate-800">No active demand requests</h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Click "Post New Need" above to submit an assistive device requirement.
+              </p>
             </div>
-
-            {/* Monthly Income */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Household Monthly Income (₹)
-              </label>
-              <input
-                type="number"
-                value={monthlyIncome}
-                onChange={(e) => setMonthlyIncome(Number(e.target.value))}
-                min={0}
-                step={500}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow transition-all"
-            >
-              Post Urgent Need Request
-            </button>
-          </form>
+          )}
         </div>
 
-        {/* Matching Proposals & Active Needs (Right Column) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Active Needs Selector */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <h2 className="text-sm font-bold text-slate-900">
-              Select Need to View PostGIS Match Proposals:
+        {/* RIGHT COLUMN: CANDIDATE MATCHES & CONCURRENCY ALLOCATION */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-base font-bold text-slate-900 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <span>PostGIS Top-Ranked Matches {selectedNeed ? `(Need #${selectedNeed.id})` : ''}</span>
             </h2>
-            {loading ? (
-              <div className="text-xs text-slate-400 p-2">Loading active needs...</div>
-            ) : (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {needs.map((n) => (
-                <button
-                  key={n.id}
-                  onClick={() => setSelectedNeed(n)}
-                  className={`p-3 rounded-xl border text-left min-w-[200px] transition-all ${
-                    selectedNeed?.id === n.id
-                      ? 'border-sky-500 bg-sky-50/50 shadow-xs'
-                      : 'border-slate-200 bg-slate-50 hover:bg-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-900 mb-1">
-                    <span>{n.category}</span>
-                    <span className="text-[10px] text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded font-mono">
-                      {n.urgencyHours}h
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-slate-500">
-                    Need #{n.id} • {n.seeker?.name || 'Verified Beneficiary'}
-                  </div>
-                </button>
-              ))}
-              </div>
+            {selectedNeed && (
+              <button
+                onClick={() => runMatching(selectedNeed.id)}
+                disabled={matchingLoading}
+                className="text-xs font-bold text-sky-700 hover:text-sky-900 transition-colors disabled:opacity-50"
+              >
+                Re-evaluate Scores
+              </button>
             )}
           </div>
 
-          {/* Top-3 Candidates Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-sky-600" />
-                  Top Match Proposals (PostGIS Radius + DENSE_RANK Scoring)
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Algorithm weights: <strong>60% Distance</strong> + <strong>30% Urgency</strong> + <strong>10% Device Condition</strong>.
-                </p>
-              </div>
-
-              {selectedNeed && (
-                <button
-                  onClick={() => runMatching(selectedNeed.id)}
-                  disabled={matchingLoading}
-                  className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-lg text-xs font-semibold transition-colors"
-                >
-                  {matchingLoading ? 'Calculating...' : 'Re-rank Matches'}
-                </button>
-              )}
+          {matchingLoading ? (
+            <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200 space-y-2">
+              <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
+              <p>Executing PostGIS ST_DWithin + CTE Multi-Criteria Scoring...</p>
             </div>
+          ) : matches.length > 0 ? (
+            <div className="space-y-4">
+              {matches.map((m, idx) => {
+                const isAccepting = claimingMatchId === m.id;
+                const scorePercent = Math.min(100, Math.round((m.score || 0) * 100));
 
-            {matchingLoading ? (
-              <div className="p-8 text-center text-slate-400 text-xs">
-                Executing PostGIS ST_DWithin and CTE ranking...
-              </div>
-            ) : matches.length > 0 ? (
-              <div className="space-y-3">
-                {matches.map((m, idx) => (
+                return (
                   <div
                     key={m.id}
-                    className="p-4 bg-slate-50 hover:bg-white border border-slate-200 hover:border-sky-300 rounded-xl transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="glass-card rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-card hover:border-purple-300 transition-all space-y-4"
                   >
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold bg-sky-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-mono">
-                          {idx + 1}
-                        </span>
-                        <span className="text-xs font-bold text-slate-900 font-mono">
-                          Device #{m.deviceId}
-                        </span>
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                          Score: {(m.score * 100).toFixed(1)}%
-                        </span>
-                        <StatusBadge status={m.status} size="sm" />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 font-display font-extrabold flex items-center justify-center text-sm border border-purple-100">
+                          #{idx + 1}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-slate-500">
+                              {m.device?.serial}
+                            </span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60">
+                              SAFE Certified
+                            </span>
+                          </div>
+                          <h3 className="font-display text-base font-bold text-slate-900 mt-0.5">
+                            {m.device?.type?.label || m.device?.type?.category}
+                          </h3>
+                        </div>
                       </div>
 
-                      <p className="text-xs text-slate-600">
-                        Candidate wheelchair matched within configured 50 km radius.
-                      </p>
+                      {/* Match Score Badge */}
+                      <div className="flex items-center gap-2 self-start sm:self-auto">
+                        <div className="text-right">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Fit Score</span>
+                          <span className="text-sm font-extrabold text-purple-700">{scorePercent}%</span>
+                        </div>
+                        <StatusBadge status={m.status} size="sm" />
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-3 self-end sm:self-center">
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {m.device?.description}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
+                      <span className="flex items-center gap-1 font-medium bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                        <Activity className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Condition: <strong>{m.device?.condition}</strong></span>
+                      </span>
+                      <span className="flex items-center gap-1 font-medium bg-teal-50 text-teal-800 px-2.5 py-1 rounded-lg border border-teal-200/60">
+                        <MapPin className="w-3.5 h-3.5 text-teal-600" />
+                        <span>Proximity Radius Active</span>
+                      </span>
+                    </div>
+
+                    {/* Action Footer: Transactional Accept Button */}
+                    <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+                        <Lock className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Guaranteed by <code>SELECT FOR UPDATE</code></span>
+                      </div>
+
                       {m.status === 'PROPOSED' ? (
                         <button
                           onClick={() => handleAcceptMatch(m.id)}
-                          disabled={claimingMatchId === m.id}
-                          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow flex items-center gap-1.5 transition-all"
+                          disabled={isAccepting}
+                          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-700 hover:to-teal-700 disabled:opacity-50 text-white text-xs font-bold shadow-soft flex items-center justify-center gap-2 transition-all"
                         >
-                          <Lock className="w-3.5 h-3.5" />
-                          {claimingMatchId === m.id ? 'Locking Row...' : 'Claim Device (ACID)'}
+                          {isAccepting ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              <span>Executing ACID Transaction...</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 className="w-4 h-4" />
+                              <span>Claim Allocation (ACID Safe)</span>
+                            </>
+                          )}
                         </button>
                       ) : (
-                        <span className="text-xs font-bold text-sky-700 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-100 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-sky-600" />
-                          Claim Accepted
+                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Allocation Confirmed</span>
                         </span>
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                No matching available devices found within 50 km for this category.
-              </div>
-            )}
-
-            {/* ACID Demo Note */}
-            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-2 text-[11px] text-amber-800">
-              <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <strong>Flagship DBMS Concurrency Demo:</strong> When claiming a device, a transaction runs with <code className="bg-amber-100 px-1 rounded font-mono">SELECT FOR UPDATE</code> on both the match and device rows. If two seekers attempt to claim the same wheelchair simultaneously, one acquires the lock and commits while the other is rejected with a 409 Conflict.
-              </div>
+                );
+              })}
             </div>
+          ) : (
+            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/90 space-y-3 shadow-card">
+              <Sparkles className="w-10 h-10 text-slate-300 mx-auto" />
+              <h3 className="font-display font-bold text-base text-slate-800">No candidate matches generated yet</h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                Select a demand request from the left column to run the PostGIS spatial matching engine.
+              </p>
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {/* =========================================================================
+          POST NEW NEED MODAL DIALOG
+         ========================================================================= */}
+      {showNeedModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-display font-bold text-lg text-slate-900">Post Accessibility Need</h3>
+                <p className="text-xs text-slate-500">Provide requirement parameters for multi-criteria scoring</p>
+              </div>
+              <button
+                onClick={() => setShowNeedModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateNeed} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Device Category Required
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as DeviceCategory)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 cursor-pointer"
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c.value} value={c.value}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Clinical Urgency Window
+                </label>
+                <select
+                  value={urgencyHours}
+                  onChange={(e) => setUrgencyHours(Number(e.target.value))}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 cursor-pointer"
+                >
+                  <option value={12}>12 Hours (Critical Post-Operative / Acute)</option>
+                  <option value={24}>24 Hours (High Priority Rehab)</option>
+                  <option value={48}>48 Hours (Standard Outpatient Need)</option>
+                  <option value={72}>72 Hours (Elective / Progressive Condition)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Beneficiary Location & Hub
+                </label>
+                <select
+                  value={placeIndex}
+                  onChange={(e) => setPlaceIndex(Number(e.target.value))}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 cursor-pointer"
+                >
+                  {PRESET_PLACES.map((p, idx) => (
+                    <option key={idx} value={idx}>
+                      {p.name} ({p.district})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Monthly Household Income (₹)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  step={500}
+                  value={monthlyIncome}
+                  onChange={(e) => setMonthlyIncome(Number(e.target.value))}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">
+                  Enforces check constraint: <code>monthly_income &gt;= 0</code>
+                </span>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="btn-press w-full py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-soft hover:shadow-glow-sky transition-all"
+                >
+                  Submit & Generate Top-3 Allocations
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
+
     </div>
   );
 };

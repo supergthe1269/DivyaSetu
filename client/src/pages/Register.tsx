@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Role } from '../types';
-import { HeartHandshake, UserPlus } from 'lucide-react';
+import { UserPlus, AlertCircle } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const { register } = useAuth();
@@ -37,118 +37,137 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-600 to-teal-500 flex items-center justify-center text-white mx-auto shadow-md shadow-sky-500/20">
-            <HeartHandshake className="w-7 h-7" />
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-10 pb-safe">
+      <div className="w-full max-w-md space-y-6 glass-panel p-8 sm:p-10 rounded-3xl border border-slate-200/90 shadow-premium">
+        
+        {/* Header with Logo */}
+        <div className="text-center space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto shadow-2xs p-2">
+            <img src="/logo.png" alt="DivyaSetu Logo" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Create an Account
-          </h1>
-          <p className="text-xs text-slate-500">
-            Join the DivyaSetu assistive device redistribution network
-          </p>
+          <div>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Create an Account
+            </h1>
+            <p className="text-xs text-slate-500 mt-1">
+              Join the DivyaSetu assistive device redistribution network
+            </p>
+          </div>
         </div>
 
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
-            {error}
+          <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-semibold flex items-center gap-2 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Full Name
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Full Legal Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
               placeholder="e.g. Ramesh Kumar"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              required
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200/90 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all font-semibold"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Mobile Number
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              10-Digit Mobile Number
             </label>
             <input
               type="tel"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
-              required
               placeholder="e.g. 9876543210"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              required
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200/90 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Password
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Account Role
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(['DONOR', 'SEEKER', 'VERIFIER'] as Role[]).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className={`btn-press p-2.5 rounded-xl border text-xs font-bold transition-all ${
+                    role === r
+                      ? 'bg-sky-50 border-sky-500 text-sky-800 ring-2 ring-sky-500/20 shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {role === 'SEEKER' && (
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Disability Classification (Required for Seeker)
+              </label>
+              <select
+                value={disabilityType}
+                onChange={(e) => setDisabilityType(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200/90 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all cursor-pointer"
+              >
+                <option value="Orthopaedic handicap">Orthopaedic handicap (Mobility)</option>
+                <option value="Hearing impairment">Hearing impairment</option>
+                <option value="Visual impairment">Visual impairment</option>
+                <option value="Locomotor disability">Locomotor disability</option>
+                <option value="Cerebral palsy">Cerebral palsy</option>
+              </select>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Account Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200/90 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
             />
           </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Select Your Role
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 font-medium"
-            >
-              <option value="DONOR">Donor (I have equipment to list & donate)</option>
-              <option value="SEEKER">Seeker (I am in need of assistive equipment)</option>
-              <option value="VERIFIER">Verifier (Field worker / Medical inspector)</option>
-            </select>
-          </div>
-
-          {role === 'SEEKER' && (
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Disability Category (Optional)
-              </label>
-              <select
-                value={disabilityType}
-                onChange={(e) => setDisabilityType(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-              >
-                <option value="Orthopaedic handicap">Orthopaedic handicap (Mobility)</option>
-                <option value="Hearing impairment">Hearing impairment</option>
-                <option value="Visual impairment">Visual impairment</option>
-                <option value="Multiple disabilities">Multiple disabilities</option>
-              </select>
-            </div>
-          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow transition-all flex items-center justify-center gap-1.5"
+            className="btn-press w-full py-3 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-soft hover:shadow-glow-sky transition-all flex items-center justify-center gap-2"
           >
-            <UserPlus className="w-4 h-4" />
-            {loading ? 'Creating Account...' : 'Register Account'}
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <UserPlus className="w-4 h-4" />
+                <span>Create Verified Account</span>
+              </>
+            )}
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-sky-600 hover:underline">
+        <div className="text-center pt-2 border-t border-slate-100 text-xs text-slate-500">
+          Already registered?{' '}
+          <Link to="/login" className="font-bold text-sky-700 hover:underline">
             Sign in
           </Link>
         </div>
+
       </div>
     </div>
   );
