@@ -107,7 +107,7 @@ export const Discover: React.FC = () => {
               certified safety inspections, and multi-criteria spatial proximity matching.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-400">
+            {/*<div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-400">
               <span className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100% Certified Safe
               </span>
@@ -117,7 +117,7 @@ export const Discover: React.FC = () => {
               <span className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
                 <MapPin className="w-3.5 h-3.5 text-teal-400" /> GiST Spatial Indexing
               </span>
-            </div>
+            </div>*/}
           </div>
 
           {/* Real-time Telemetry Snapshot Card */}

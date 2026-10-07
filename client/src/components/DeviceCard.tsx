@@ -59,7 +59,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, distKm }) => {
               <span className="font-mono text-[10px] font-bold text-slate-400 tracking-wider uppercase block">
                 {device.serial}
               </span>
-              <h3 className="font-display text-base font-bold text-slate-900 group-hover:text-sky-700 transition-colors line-clamp-1">
+              <h3 className="font-display text-base font-bold text-slate-900 group-hover:text-sky-700 transition-colors break-words">
                 {device.type?.label || cat}
               </h3>
             </div>

@@ -212,7 +212,7 @@ export const SeekerDashboard: React.FC = () => {
               Loading requests...
             </div>
           ) : needs.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
               {needs.map((n) => {
                 const isSelected = selectedNeed?.id === n.id;
                 return (
@@ -259,7 +259,7 @@ export const SeekerDashboard: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-1.5 font-medium justify-end">
                         <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Income: ₹{n.monthlyIncome}</span>
+                        <span>Budget: ₹{n.monthlyIncome}</span>
                       </div>
                     </div>
                   </button>
