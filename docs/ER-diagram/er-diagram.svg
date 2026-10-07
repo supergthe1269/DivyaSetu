@@ -1,0 +1,660 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1680" width="2400" height="1680" style="background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Card Shadow -->
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="112%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0F172A" flood-opacity="0.07"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+
+    <!-- Arrow Markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16A34A"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D97706"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0D9488"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EA580C"/>
+    </marker>
+
+    <!-- Key & Badge Icons -->
+    <g id="pk-icon">
+      <circle cx="6" cy="6" r="3.2" fill="none" stroke="#D97706" stroke-width="1.8"/>
+      <path d="M 8.2 8.2 L 13.5 13.5 M 11.5 11.5 L 13.5 9.5 M 10 10 L 11.5 8.5" stroke="#D97706" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+    <g id="fk-icon">
+      <circle cx="6" cy="6" r="3.2" fill="none" stroke="#2563EB" stroke-width="1.8"/>
+      <path d="M 8.2 8.2 L 13.5 13.5 M 11.5 11.5 L 13.5 9.5" stroke="#2563EB" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+    <g id="gist-icon">
+      <rect x="0" y="1" width="14" height="12" rx="2" fill="#8B5CF6" fill-opacity="0.15" stroke="#7C3AED" stroke-width="1.2"/>
+      <circle cx="7" cy="7" r="2.5" fill="#7C3AED"/>
+    </g>
+  </defs>
+
+  <!-- ==================== HEADER BANNER ==================== -->
+  <g id="header-section">
+    <rect x="0" y="0" width="2400" height="84" fill="#FFFFFF"/>
+    <line x1="0" y1="84" x2="2400" y2="84" stroke="#E2E8F0" stroke-width="1.5"/>
+    
+    <text x="60" y="42" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">DivyaSetu — E-R Diagram (Database Schema)</text>
+    <text x="60" y="66" font-size="14" font-weight="500" fill="#64748B">Assistive Device Redistribution Platform • PostgreSQL 16 + PostGIS Spatial Engine • 11 Normalized Tables (3NF)</text>
+    
+    <g transform="translate(1870, 24)">
+      <rect x="0" y="0" width="220" height="38" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+      <text x="110" y="24" font-size="13" font-weight="700" fill="#334155" text-anchor="middle">Prisma ORM + PostgreSQL 16</text>
+    </g>
+    <g transform="translate(2110, 24)">
+      <rect x="0" y="0" width="230" height="38" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+      <text x="115" y="24" font-size="13" font-weight="700" fill="#065F46" text-anchor="middle">PostGIS 3.4 GiST Spatial Points</text>
+    </g>
+  </g>
+
+  <!-- ==================== RELATIONSHIP CONNECTIONS (ORTHOGONAL) ==================== -->
+  <g id="relationship-lines" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- 1. User -> Device (donates) [Horizontal] -->
+    <path d="M 400 200 L 520 200" stroke="#16A34A" stroke-width="2" marker-end="url(#arrow-green)"/>
+    <rect x="428" y="188" width="64" height="24" rx="5" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+    <text x="460" y="204" font-size="11" font-weight="700" fill="#15803D" text-anchor="middle">donates</text>
+    <text x="408" y="194" font-size="11" font-weight="800" fill="#16A34A">1</text>
+    <text x="506" y="194" font-size="11" font-weight="800" fill="#16A34A">N</text>
+
+    <!-- 2. DeviceType -> Device (has type) [Horizontal] -->
+    <path d="M 1060 200 L 940 200" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrow-purple)"/>
+    <rect x="968" y="188" width="64" height="24" rx="5" fill="#F3E8FF" stroke="#D8B4FE" stroke-width="1"/>
+    <text x="1000" y="204" font-size="11" font-weight="700" fill="#6B21A8" text-anchor="middle">has type</text>
+    <text x="1046" y="194" font-size="11" font-weight="800" fill="#7C3AED">1</text>
+    <text x="950" y="194" font-size="11" font-weight="800" fill="#7C3AED">N</text>
+
+    <!-- 3. User -> Need (creates) [Vertical] -->
+    <path d="M 230 470 L 230 520" stroke="#DC2626" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="198" y="483" width="64" height="24" rx="5" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
+    <text x="230" y="499" font-size="11" font-weight="700" fill="#991B1B" text-anchor="middle">creates</text>
+    <text x="238" y="480" font-size="11" font-weight="800" fill="#DC2626">1</text>
+    <text x="238" y="515" font-size="11" font-weight="800" fill="#DC2626">N</text>
+
+    <!-- 4. Device -> Certification (has certifications) [Vertical] -->
+    <path d="M 730 470 L 730 520" stroke="#D97706" stroke-width="2" marker-end="url(#arrow-amber)"/>
+    <rect x="665" y="483" width="130" height="24" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="730" y="499" font-size="11" font-weight="700" fill="#92400E" text-anchor="middle">has certifications</text>
+    <text x="738" y="480" font-size="11" font-weight="800" fill="#D97706">1</text>
+    <text x="738" y="515" font-size="11" font-weight="800" fill="#D97706">N</text>
+
+    <!-- 5. User -> Certification (performed by verifier) [Stepped] -->
+    <path d="M 400 410 L 460 410 L 460 640 L 520 640" stroke="#D97706" stroke-width="2" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-amber)"/>
+    <rect x="420" y="515" width="80" height="34" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="460" y="529" font-size="10" font-weight="700" fill="#92400E" text-anchor="middle">performed</text>
+    <text x="460" y="542" font-size="10" font-weight="600" fill="#92400E" text-anchor="middle">by verifier</text>
+
+    <!-- 6. Need -> Match (is for) [Stepped] -->
+    <path d="M 230 765 L 230 790 L 480 790 L 480 815" stroke="#0D9488" stroke-width="2" fill="none" marker-end="url(#arrow-teal)"/>
+    <rect x="315" y="778" width="80" height="24" rx="5" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/>
+    <text x="355" y="794" font-size="11" font-weight="700" fill="#115E59" text-anchor="middle">is for [1 : N]</text>
+
+    <!-- 7. Certification / Device -> Match (pairs verified device) [Vertical] -->
+    <path d="M 680 765 L 680 815" stroke="#0D9488" stroke-width="2" marker-end="url(#arrow-teal)"/>
+    <rect x="625" y="778" width="110" height="24" rx="5" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/>
+    <text x="680" y="794" font-size="10" font-weight="700" fill="#115E59" text-anchor="middle">pairs safe device</text>
+
+    <!-- 8. Match -> Transfer (leads to) [Horizontal] -->
+    <path d="M 790 920 L 880 920" stroke="#2563EB" stroke-width="2" marker-end="url(#arrow-blue)"/>
+    <rect x="806" y="908" width="60" height="24" rx="5" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+    <text x="836" y="924" font-size="11" font-weight="700" fill="#1E40AF" text-anchor="middle">leads to</text>
+    <text x="798" y="912" font-size="11" font-weight="800" fill="#2563EB">1</text>
+    <text x="866" y="912" font-size="11" font-weight="800" fill="#2563EB">N</text>
+
+    <!-- 9. Transfer -> Feedback (generates) [Stepped] -->
+    <path d="M 1280 880 L 1380 880 L 1380 625 L 1480 625" stroke="#EA580C" stroke-width="2" fill="none" marker-end="url(#arrow-orange)"/>
+    <rect x="1335" y="740" width="90" height="24" rx="5" fill="#FFEDD5" stroke="#FDBA74" stroke-width="1"/>
+    <text x="1380" y="756" font-size="10" font-weight="700" fill="#9A3412" text-anchor="middle">generates (0..1)</text>
+
+    <!-- 10. User / Transfer -> Notification (receives) [Stepped] -->
+    <path d="M 1280 960 L 1380 960 L 1380 885 L 1480 885" stroke="#16A34A" stroke-width="2" fill="none" marker-end="url(#arrow-green)"/>
+    <rect x="1340" y="910" width="80" height="24" rx="5" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+    <text x="1380" y="926" font-size="10" font-weight="700" fill="#15803D" text-anchor="middle">triggers alert</text>
+
+    <!-- 11. User -> AuditLog (actor writes) [Left margin bypass stepped] -->
+    <path d="M 60 280 L 30 280 L 30 920 L 60 920" stroke="#7C3AED" stroke-width="2" fill="none" marker-end="url(#arrow-purple)"/>
+    <rect x="5" y="585" width="50" height="34" rx="5" fill="#F3E8FF" stroke="#D8B4FE" stroke-width="1"/>
+    <text x="30" y="600" font-size="10" font-weight="700" fill="#6B21A8" text-anchor="middle">actor</text>
+    <text x="30" y="612" font-size="10" font-weight="600" fill="#6B21A8" text-anchor="middle">audits</text>
+  </g>
+
+  <!-- ==================== ENTITY TABLES ==================== -->
+
+  <!-- 1. USER -->
+  <g id="table-user" transform="translate(60, 110)" filter="url(#cardShadow)">
+    <rect width="340" height="360" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 330 0 Q 340 0 340 10 L 340 38 L 0 38 Z" fill="#DCFCE7"/>
+    <line x1="0" y1="38" x2="340" y2="38" stroke="#86EFAC" stroke-width="1.5"/>
+    <text x="170" y="25" font-size="16" font-weight="700" fill="#166534" text-anchor="middle">User (users)</text>
+    
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="165" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+      
+      <text x="22" y="23" font-weight="500" fill="#334155">name</text>
+      <text x="165" y="23" fill="#64748B">VARCHAR(255)</text>
+      
+      <text x="22" y="46" font-weight="700" fill="#0F172A">mobile</text>
+      <text x="165" y="46" font-weight="700" fill="#2563EB">VARCHAR(20) UNIQUE</text>
+      
+      <text x="22" y="69" font-weight="500" fill="#334155">password_hash</text>
+      <text x="165" y="69" fill="#64748B">VARCHAR(255)</text>
+      
+      <text x="22" y="92" font-weight="700" fill="#0F172A">role</text>
+      <text x="165" y="92" font-weight="700" fill="#7C3AED">ENUM(Role)</text>
+      
+      <text x="22" y="115" font-weight="500" fill="#334155">language</text>
+      <text x="165" y="115" fill="#64748B">VARCHAR(10) ['en']</text>
+
+      <text x="22" y="138" font-weight="500" fill="#334155">disability_type</text>
+      <text x="165" y="138" fill="#64748B">VARCHAR(100)?</text>
+      
+      <text x="22" y="161" font-weight="500" fill="#334155">is_approved</text>
+      <text x="165" y="161" fill="#64748B">BOOLEAN [false]</text>
+      
+      <text x="22" y="184" font-weight="500" fill="#334155">lat, lng</text>
+      <text x="165" y="184" fill="#64748B">DOUBLE PRECISION?</text>
+      
+      <text x="22" y="207" font-weight="500" fill="#334155">is_deleted</text>
+      <text x="165" y="207" fill="#64748B">BOOLEAN [false]</text>
+
+      <text x="22" y="230" font-weight="500" fill="#334155">created_at</text>
+      <text x="165" y="230" fill="#64748B">TIMESTAMP</text>
+      
+      <text x="22" y="253" font-weight="500" fill="#334155">updated_at</text>
+      <text x="165" y="253" fill="#64748B">TIMESTAMP</text>
+    </g>
+  </g>
+
+  <!-- 2. DEVICE -->
+  <g id="table-device" transform="translate(520, 110)" filter="url(#cardShadow)">
+    <rect width="420" height="360" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 410 0 Q 420 0 420 10 L 420 38 L 0 38 Z" fill="#DBEAFE"/>
+    <line x1="0" y1="38" x2="420" y2="38" stroke="#93C5FD" stroke-width="1.5"/>
+    <text x="210" y="25" font-size="16" font-weight="700" fill="#1E40AF" text-anchor="middle">Device (devices)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="195" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <text x="22" y="23" font-weight="700" fill="#0F172A">serial</text>
+      <text x="195" y="23" font-weight="700" fill="#059669">VARCHAR(50) UNIQUE (QR)</text>
+
+      <use href="#fk-icon" x="0" y="34"/>
+      <text x="22" y="46" font-weight="700" fill="#0F172A">donor_id</text>
+      <text x="195" y="46" font-weight="700" fill="#2563EB">INT → users(id)</text>
+
+      <use href="#fk-icon" x="0" y="57"/>
+      <text x="22" y="69" font-weight="700" fill="#0F172A">type_id</text>
+      <text x="195" y="69" font-weight="700" fill="#2563EB">INT → device_types(id)</text>
+
+      <text x="22" y="92" font-weight="500" fill="#334155">condition</text>
+      <text x="195" y="92" fill="#64748B">VARCHAR(50) ['GOOD']</text>
+
+      <text x="22" y="115" font-weight="500" fill="#334155">description</text>
+      <text x="195" y="115" fill="#64748B">TEXT</text>
+
+      <text x="22" y="138" font-weight="700" fill="#0F172A">status</text>
+      <text x="195" y="138" font-weight="700" fill="#7C3AED">ENUM(DeviceStatus)</text>
+
+      <text x="22" y="161" font-weight="500" fill="#334155">lat, lng</text>
+      <text x="195" y="161" fill="#64748B">DOUBLE PRECISION?</text>
+
+      <use href="#gist-icon" x="0" y="174"/>
+      <text x="22" y="184" font-weight="700" fill="#7C3AED">geometry</text>
+      <text x="195" y="184" font-weight="700" fill="#7C3AED">GEOMETRY(Point, 4326) [GiST]</text>
+
+      <text x="22" y="207" font-weight="500" fill="#334155">description_tsv</text>
+      <text x="195" y="207" fill="#64748B">TSVECTOR (Full-Text Search)</text>
+
+      <text x="22" y="230" font-weight="500" fill="#334155">is_deleted</text>
+      <text x="195" y="230" fill="#64748B">BOOLEAN [false]</text>
+
+      <text x="22" y="253" font-weight="500" fill="#334155">listed_at</text>
+      <text x="195" y="253" fill="#64748B">TIMESTAMP</text>
+    </g>
+  </g>
+
+  <!-- 3. DEVICETYPE -->
+  <g id="table-devicetype" transform="translate(1060, 110)" filter="url(#cardShadow)">
+    <rect width="340" height="175" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 330 0 Q 340 0 340 10 L 340 38 L 0 38 Z" fill="#F3E8FF"/>
+    <line x1="0" y1="38" x2="340" y2="38" stroke="#D8B4FE" stroke-width="1.5"/>
+    <text x="170" y="25" font-size="16" font-weight="700" fill="#6B21A8" text-anchor="middle">DeviceType (device_types)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="150" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <text x="22" y="24" font-weight="700" fill="#0F172A">category</text>
+      <text x="150" y="24" font-weight="700" fill="#7C3AED">ENUM(Category) UNIQUE</text>
+
+      <text x="22" y="48" font-weight="500" fill="#334155">label</text>
+      <text x="150" y="48" font-weight="700" fill="#2563EB">VARCHAR(100) UNIQUE</text>
+    </g>
+  </g>
+
+  <!-- 4. OTP -->
+  <g id="table-otp" transform="translate(1480, 110)" filter="url(#cardShadow)">
+    <rect width="320" height="175" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 310 0 Q 320 0 320 10 L 320 38 L 0 38 Z" fill="#F1F5F9"/>
+    <line x1="0" y1="38" x2="320" y2="38" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="160" y="25" font-size="16" font-weight="700" fill="#334155" text-anchor="middle">Otp (otps)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="130" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <text x="22" y="24" font-weight="500" fill="#334155">mobile</text>
+      <text x="130" y="24" fill="#64748B">VARCHAR(20) [INDEX]</text>
+
+      <text x="22" y="48" font-weight="500" fill="#334155">code</text>
+      <text x="130" y="48" fill="#64748B">VARCHAR(10)</text>
+
+      <text x="22" y="72" font-weight="500" fill="#334155">used</text>
+      <text x="130" y="72" fill="#64748B">BOOLEAN [false]</text>
+
+      <text x="22" y="96" font-weight="500" fill="#334155">expires_at</text>
+      <text x="130" y="96" fill="#64748B">TIMESTAMP</text>
+    </g>
+  </g>
+
+  <!-- 5. NEED -->
+  <g id="table-need" transform="translate(60, 520)" filter="url(#cardShadow)">
+    <rect width="340" height="245" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 330 0 Q 340 0 340 10 L 340 38 L 0 38 Z" fill="#FEE2E2"/>
+    <line x1="0" y1="38" x2="340" y2="38" stroke="#FCA5A5" stroke-width="1.5"/>
+    <text x="170" y="25" font-size="16" font-weight="700" fill="#991B1B" text-anchor="middle">Need (needs)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="150" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <use href="#fk-icon" x="0" y="12"/>
+      <text x="22" y="24" font-weight="700" fill="#0F172A">seeker_id</text>
+      <text x="150" y="24" font-weight="700" fill="#2563EB">INT → users(id)</text>
+
+      <text x="22" y="48" font-weight="700" fill="#0F172A">category</text>
+      <text x="150" y="48" font-weight="700" fill="#7C3AED">ENUM(Category)</text>
+
+      <text x="22" y="72" font-weight="500" fill="#334155">urgency_hours</text>
+      <text x="150" y="72" fill="#64748B">INT [168 default]</text>
+
+      <text x="22" y="96" font-weight="500" fill="#334155">monthly_income</text>
+      <text x="150" y="96" fill="#64748B">INT? (INR)</text>
+
+      <text x="22" y="120" font-weight="700" fill="#0F172A">status</text>
+      <text x="150" y="120" font-weight="700" fill="#7C3AED">ENUM(DeviceStatus)</text>
+
+      <text x="22" y="144" font-weight="500" fill="#334155">lat, lng</text>
+      <text x="150" y="144" fill="#64748B">DOUBLE PRECISION?</text>
+
+      <use href="#gist-icon" x="0" y="157"/>
+      <text x="22" y="168" font-weight="700" fill="#7C3AED">geometry</text>
+      <text x="150" y="168" font-weight="700" fill="#7C3AED">GEOMETRY(Point) [GiST]</text>
+    </g>
+  </g>
+
+  <!-- 6. CERTIFICATION -->
+  <g id="table-certification" transform="translate(520, 520)" filter="url(#cardShadow)">
+    <rect width="420" height="245" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 410 0 Q 420 0 420 10 L 420 38 L 0 38 Z" fill="#FEF3C7"/>
+    <line x1="0" y1="38" x2="420" y2="38" stroke="#FCD34D" stroke-width="1.5"/>
+    <text x="210" y="25" font-size="16" font-weight="700" fill="#92400E" text-anchor="middle">Certification (certifications)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="180" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <use href="#fk-icon" x="0" y="12"/>
+      <text x="22" y="24" font-weight="700" fill="#0F172A">device_id</text>
+      <text x="180" y="24" font-weight="700" fill="#2563EB">INT → devices(id)</text>
+
+      <use href="#fk-icon" x="0" y="34"/>
+      <text x="22" y="46" font-weight="700" fill="#0F172A">verifier_id</text>
+      <text x="180" y="46" font-weight="700" fill="#2563EB">INT → users(id)</text>
+
+      <text x="22" y="68" font-weight="700" fill="#0F172A">verdict</text>
+      <text x="180" y="68" font-weight="700" fill="#D97706">ENUM(Verdict) [PENDING/SAFE]</text>
+
+      <text x="22" y="90" font-weight="500" fill="#334155">notes</text>
+      <text x="180" y="90" fill="#64748B">TEXT?</text>
+
+      <text x="22" y="112" font-weight="500" fill="#334155">certificate_ref</text>
+      <text x="180" y="112" fill="#64748B">VARCHAR(100)?</text>
+
+      <text x="22" y="134" font-weight="500" fill="#334155">inspected_at</text>
+      <text x="180" y="134" fill="#64748B">TIMESTAMP?</text>
+
+      <text x="22" y="156" font-weight="700" fill="#0F172A">expires_at</text>
+      <text x="180" y="156" font-weight="700" fill="#EA580C">TIMESTAMP? (Safety validity)</text>
+    </g>
+  </g>
+
+  <!-- 7. FEEDBACK -->
+  <g id="table-feedback" transform="translate(1480, 520)" filter="url(#cardShadow)">
+    <rect width="320" height="210" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 310 0 Q 320 0 320 10 L 320 38 L 0 38 Z" fill="#FFEDD5"/>
+    <line x1="0" y1="38" x2="320" y2="38" stroke="#FDBA74" stroke-width="1.5"/>
+    <text x="160" y="25" font-size="16" font-weight="700" fill="#9A3412" text-anchor="middle">Feedback (feedback)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="150" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <use href="#fk-icon" x="0" y="12"/>
+      <text x="22" y="24" font-weight="700" fill="#0F172A">transfer_id</text>
+      <text x="150" y="24" font-weight="700" fill="#2563EB">INT UNIQUE → transfers(id)</text>
+
+      <text x="22" y="48" font-weight="500" fill="#334155">rating</text>
+      <text x="150" y="48" fill="#64748B">INT [1..5, default 5]</text>
+
+      <text x="22" y="72" font-weight="500" fill="#334155">notes</text>
+      <text x="150" y="72" fill="#64748B">TEXT?</text>
+
+      <text x="22" y="96" font-weight="700" fill="#0F172A">re_list_intent</text>
+      <text x="150" y="96" font-weight="700" fill="#059669">BOOLEAN (Circular Reuse)</text>
+    </g>
+  </g>
+
+  <!-- 8. MATCH -->
+  <g id="table-match" transform="translate(380, 815)" filter="url(#cardShadow)">
+    <rect width="410" height="220" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 400 0 Q 410 0 410 10 L 410 38 L 0 38 Z" fill="#CCFBF1"/>
+    <line x1="0" y1="38" x2="410" y2="38" stroke="#5EEAD4" stroke-width="1.5"/>
+    <text x="205" y="25" font-size="16" font-weight="700" fill="#115E59" text-anchor="middle">Match (matches)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="180" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <use href="#fk-icon" x="0" y="12"/>
+      <text x="22" y="24" font-weight="700" fill="#0F172A">device_id</text>
+      <text x="180" y="24" font-weight="700" fill="#2563EB">INT → devices(id)</text>
+
+      <use href="#fk-icon" x="0" y="34"/>
+      <text x="22" y="46" font-weight="700" fill="#0F172A">need_id</text>
+      <text x="180" y="46" font-weight="700" fill="#2563EB">INT → needs(id)</text>
+
+      <text x="22" y="68" font-weight="700" fill="#0F172A">[device_id, need_id]</text>
+      <text x="180" y="68" font-weight="700" fill="#7C3AED">COMPOSITE UNIQUE</text>
+
+      <text x="22" y="90" font-weight="500" fill="#334155">score</text>
+      <text x="180" y="90" fill="#64748B">FLOAT (Geo-dist + urgency)</text>
+
+      <text x="22" y="112" font-weight="500" fill="#334155">source</text>
+      <text x="180" y="112" fill="#64748B">VARCHAR ['GEO_SCORE']</text>
+
+      <text x="22" y="134" font-weight="700" fill="#0F172A">status</text>
+      <text x="180" y="134" font-weight="700" fill="#0D9488">ENUM(MatchStatus) [PROPOSED]</text>
+    </g>
+  </g>
+
+  <!-- 9. TRANSFER -->
+  <g id="table-transfer" transform="translate(880, 815)" filter="url(#cardShadow)">
+    <rect width="400" height="240" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 390 0 Q 400 0 400 10 L 400 38 L 0 38 Z" fill="#DBEAFE"/>
+    <line x1="0" y1="38" x2="400" y2="38" stroke="#93C5FD" stroke-width="1.5"/>
+    <text x="200" y="25" font-size="16" font-weight="700" fill="#1E40AF" text-anchor="middle">Transfer (transfers)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="160" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <use href="#fk-icon" x="0" y="12"/>
+      <text x="22" y="24" font-weight="700" fill="#0F172A">match_id</text>
+      <text x="160" y="24" font-weight="700" fill="#2563EB">INT → matches(id)</text>
+
+      <text x="22" y="48" font-weight="500" fill="#334155">pickup_addr</text>
+      <text x="160" y="48" fill="#64748B">TEXT</text>
+
+      <text x="22" y="72" font-weight="500" fill="#334155">dropoff_addr</text>
+      <text x="160" y="72" fill="#64748B">TEXT</text>
+
+      <text x="22" y="96" font-weight="700" fill="#0F172A">status</text>
+      <text x="160" y="96" font-weight="700" fill="#2563EB">ENUM(TransferStatus)</text>
+
+      <text x="22" y="120" font-weight="500" fill="#334155">cost_paisa</text>
+      <text x="160" y="120" fill="#64748B">INT? (Paisa)</text>
+
+      <text x="22" y="144" font-weight="500" fill="#334155">delivered_at</text>
+      <text x="160" y="144" fill="#64748B">TIMESTAMP?</text>
+    </g>
+  </g>
+
+  <!-- 10. NOTIFICATION -->
+  <g id="table-notification" transform="translate(1480, 780)" filter="url(#cardShadow)">
+    <rect width="320" height="210" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 310 0 Q 320 0 320 10 L 320 38 L 0 38 Z" fill="#DCFCE7"/>
+    <line x1="0" y1="38" x2="320" y2="38" stroke="#86EFAC" stroke-width="1.5"/>
+    <text x="160" y="25" font-size="16" font-weight="700" fill="#166534" text-anchor="middle">Notification (notifications)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="140" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <use href="#fk-icon" x="0" y="12"/>
+      <text x="22" y="24" font-weight="700" fill="#0F172A">user_id</text>
+      <text x="140" y="24" font-weight="700" fill="#2563EB">INT → users(id)</text>
+
+      <text x="22" y="48" font-weight="500" fill="#334155">type</text>
+      <text x="140" y="48" fill="#64748B">VARCHAR(50)</text>
+
+      <text x="22" y="72" font-weight="500" fill="#334155">payload</text>
+      <text x="140" y="72" fill="#64748B">JSONB?</text>
+
+      <text x="22" y="96" font-weight="700" fill="#0F172A">seen</text>
+      <text x="140" y="96" font-weight="700" fill="#16A34A">BOOLEAN [false]</text>
+    </g>
+  </g>
+
+  <!-- 11. AUDITLOG -->
+  <g id="table-auditlog" transform="translate(60, 815)" filter="url(#cardShadow)">
+    <rect width="280" height="225" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 270 0 Q 280 0 280 10 L 280 38 L 0 38 Z" fill="#F3E8FF"/>
+    <line x1="0" y1="38" x2="280" y2="38" stroke="#D8B4FE" stroke-width="1.5"/>
+    <text x="140" y="25" font-size="16" font-weight="700" fill="#6B21A8" text-anchor="middle">AuditLog (audit_log)</text>
+
+    <g transform="translate(16, 56)" font-size="12.5">
+      <use href="#pk-icon" x="0" y="-10"/>
+      <text x="22" y="0" font-weight="700" fill="#0F172A">id</text>
+      <text x="130" y="0" font-weight="700" fill="#D97706">INT (SERIAL) — PK</text>
+
+      <text x="22" y="24" font-weight="500" fill="#334155">table_name</text>
+      <text x="130" y="24" fill="#64748B">VARCHAR(50)</text>
+
+      <text x="22" y="48" font-weight="500" fill="#334155">record_id</text>
+      <text x="130" y="48" fill="#64748B">INT</text>
+
+      <text x="22" y="72" font-weight="700" fill="#0F172A">action</text>
+      <text x="130" y="72" font-weight="700" fill="#7C3AED">VARCHAR(50)</text>
+
+      <text x="22" y="96" font-weight="500" fill="#334155">payload</text>
+      <text x="130" y="96" fill="#64748B">JSONB?</text>
+
+      <use href="#fk-icon" x="0" y="108"/>
+      <text x="22" y="120" font-weight="700" fill="#0F172A">actor_id</text>
+      <text x="130" y="120" font-weight="700" fill="#2563EB">INT? → users(id)</text>
+    </g>
+  </g>
+
+  <!-- ==================== BOTTOM PANELS (ENUMS, POSTGIS DBMS, LEGEND) ==================== -->
+
+  <!-- Panel 1: Key Enums & Status Values -->
+  <g transform="translate(60, 1090)" filter="url(#cardShadow)">
+    <rect width="900" height="490" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 890 0 Q 900 0 900 10 L 900 36 L 0 36 Z" fill="#F8FAFC"/>
+    <line x1="0" y1="36" x2="900" y2="36" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="14" font-weight="700" fill="#1E293B">Key Enums &amp; Database Domain Constraints</text>
+
+    <g transform="translate(24, 60)" font-size="12">
+      <!-- Col 1 -->
+      <g transform="translate(0, 0)">
+        <text x="0" y="0" font-weight="700" fill="#0F172A">Role</text>
+        <rect x="0" y="10" width="260" height="90" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="12" y="32" fill="#334155">• DONOR</text>
+        <text x="12" y="52" fill="#334155">• SEEKER</text>
+        <text x="12" y="72" fill="#334155">• VERIFIER</text>
+        <text x="12" y="92" fill="#334155">• ADMIN</text>
+      </g>
+
+      <g transform="translate(0, 120)">
+        <text x="0" y="0" font-weight="700" fill="#0F172A">DeviceStatus (Lifecycle State Machine)</text>
+        <rect x="0" y="10" width="260" height="130" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="12" y="30" fill="#334155">• AVAILABLE (Certified safe)</text>
+        <text x="12" y="50" fill="#334155">• CERTIFYING (Under inspection)</text>
+        <text x="12" y="70" fill="#334155">• MATCHED (Paired with seeker)</text>
+        <text x="12" y="90" fill="#334155">• IN_TRANSIT (Logistics active)</text>
+        <text x="12" y="110" fill="#334155">• DELIVERED (Handover complete)</text>
+        <text x="12" y="130" fill="#334155">• RE_LISTED (Circular cycle)</text>
+      </g>
+
+      <!-- Col 2 -->
+      <g transform="translate(290, 0)">
+        <text x="0" y="0" font-weight="700" fill="#0F172A">DeviceCategory (Catalog)</text>
+        <rect x="0" y="10" width="270" height="130" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="12" y="30" fill="#334155">• WHEELCHAIR</text>
+        <text x="12" y="50" fill="#334155">• HEARING_AID</text>
+        <text x="12" y="70" fill="#334155">• CRUTCH</text>
+        <text x="12" y="90" fill="#334155">• TRICYCLE</text>
+        <text x="12" y="110" fill="#334155">• BRAILLE_KIT</text>
+        <text x="12" y="130" fill="#334155">• PROSTHETIC</text>
+      </g>
+
+      <g transform="translate(290, 160)">
+        <text x="0" y="0" font-weight="700" fill="#0F172A">Verdict (Safety Ledger)</text>
+        <rect x="0" y="10" width="270" height="75" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="12" y="30" fill="#D97706">• PENDING (Awaiting check)</text>
+        <text x="12" y="50" fill="#16A34A">• SAFE (Certified for dispatch)</text>
+        <text x="12" y="70" fill="#DC2626">• NOT_SAFE (Rejected/Refurbish)</text>
+      </g>
+
+      <!-- Col 3 -->
+      <g transform="translate(590, 0)">
+        <text x="0" y="0" font-weight="700" fill="#0F172A">MatchStatus (Allocation)</text>
+        <rect x="0" y="10" width="250" height="95" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="12" y="30" fill="#334155">• PROPOSED (Algorithmic pick)</text>
+        <text x="12" y="50" fill="#334155">• ACCEPTED (Confirmed pair)</text>
+        <text x="12" y="70" fill="#334155">• REJECTED (Declined pair)</text>
+        <text x="12" y="90" fill="#334155">• CLOSED (Fulfilled/Expired)</text>
+      </g>
+
+      <g transform="translate(590, 120)">
+        <text x="0" y="0" font-weight="700" fill="#0F172A">TransferStatus (Logistics)</text>
+        <rect x="0" y="10" width="250" height="115" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="12" y="30" fill="#334155">• PLANNED (Pickup scheduled)</text>
+        <text x="12" y="50" fill="#334155">• PICKED_UP (In volunteer custody)</text>
+        <text x="12" y="70" fill="#334155">• IN_TRANSIT (Dispatched)</text>
+        <text x="12" y="90" fill="#334155">• DELIVERED (Beneficiary verified)</text>
+        <text x="12" y="110" fill="#334155">• CANCELLED (Aborted)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Panel 2: Advanced PostgreSQL 16 + PostGIS Layer -->
+  <g transform="translate(990, 1090)" filter="url(#cardShadow)">
+    <rect width="800" height="490" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 790 0 Q 800 0 800 10 L 800 36 L 0 36 Z" fill="#EEF2FF"/>
+    <line x1="0" y1="36" x2="800" y2="36" stroke="#C7D2FE" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="14" font-weight="700" fill="#3730A3">PostgreSQL 16 + PostGIS Engine Features (DBMS Viva Focus)</text>
+
+    <g transform="translate(24, 55)" font-size="12">
+      <text x="0" y="14" font-weight="700" fill="#4338CA">1. Geospatial Engine (PostGIS 3.4)</text>
+      <text x="0" y="34" fill="#334155">• Extension: <tspan font-family="monospace" fill="#0F172A">CREATE EXTENSION postgis;</tspan></text>
+      <text x="0" y="52" fill="#334155">• GiST Spatial Indexes: <tspan font-family="monospace" fill="#0F172A">idx_devices_geometry_gist</tspan> &amp; <tspan font-family="monospace" fill="#0F172A">idx_needs_geometry_gist</tspan></text>
+      <text x="0" y="70" fill="#334155">• Fast Nearest-Neighbor distance queries: <tspan font-family="monospace" fill="#0F172A">ST_DWithin(d.geometry, n.geometry, radius_meters)</tspan></text>
+
+      <text x="0" y="105" font-weight="700" fill="#4338CA">2. PL/pgSQL Database Triggers</text>
+      <text x="0" y="125" fill="#334155">• <tspan font-family="monospace" font-weight="600" fill="#0F172A">trg_device_set_geometry</tspan>: Automatically converts lat/lng to <tspan font-family="monospace">ST_MakePoint</tspan> on INSERT/UPDATE</text>
+      <text x="0" y="143" fill="#334155">• <tspan font-family="monospace" font-weight="600" fill="#0F172A">trg_need_set_geometry</tspan>: Auto-populates PostGIS geometry point for seeker demands</text>
+      <text x="0" y="161" fill="#334155">• <tspan font-family="monospace" font-weight="600" fill="#0F172A">trg_audit_device_status</tspan>: Automatically appends immutable event into <tspan font-family="monospace">audit_log</tspan> on status transition</text>
+
+      <text x="0" y="196" font-weight="700" fill="#4338CA">3. Stored Functions &amp; Integrity Enforcement</text>
+      <text x="0" y="216" fill="#334155">• <tspan font-family="monospace" font-weight="600" fill="#0F172A">fn_device_is_certified(p_device_id integer) RETURNS boolean</tspan></text>
+      <text x="14" y="234" fill="#64748B">Validates that device has verdict = 'SAFE' and expires_at &gt; now() before enabling matching</text>
+
+      <text x="0" y="269" font-weight="700" fill="#4338CA">4. SQL Views &amp; Full-Text Search</text>
+      <text x="0" y="289" fill="#334155">• <tspan font-family="monospace" font-weight="600" fill="#0F172A">vw_district_aggregate</tspan>: Aggregate view grouping available vs. delivered devices by category</text>
+      <text x="0" y="307" fill="#334155">• Native PostgreSQL tsvector (<tspan font-family="monospace">description_tsv</tspan>) for BM25 semantic full-text search</text>
+    </g>
+  </g>
+
+  <!-- Panel 3: Legend & Cardinality -->
+  <g transform="translate(1820, 1090)" filter="url(#cardShadow)">
+    <rect width="520" height="490" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <path d="M 0 10 Q 0 0 10 0 L 510 0 Q 520 0 520 10 L 520 36 L 0 36 Z" fill="#F8FAFC"/>
+    <line x1="0" y1="36" x2="520" y2="36" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="14" font-weight="700" fill="#1E293B">Notation &amp; Relationship Legend</text>
+
+    <g transform="translate(24, 60)" font-size="13">
+      <use href="#pk-icon" x="0" y="-8"/>
+      <text x="26" y="2" font-weight="700" fill="#0F172A">Primary Key (PK)</text>
+      <text x="180" y="2" fill="#64748B">Auto-incrementing integer (SERIAL)</text>
+
+      <g transform="translate(0, 32)">
+        <use href="#fk-icon" x="0" y="-8"/>
+        <text x="26" y="2" font-weight="700" fill="#0F172A">Foreign Key (FK)</text>
+        <text x="180" y="2" fill="#64748B">Referential integrity enforced</text>
+      </g>
+
+      <g transform="translate(0, 64)">
+        <use href="#gist-icon" x="0" y="-7"/>
+        <text x="26" y="2" font-weight="700" fill="#7C3AED">PostGIS GiST</text>
+        <text x="180" y="2" fill="#64748B">Geospatial indexed point column</text>
+      </g>
+
+      <g transform="translate(0, 96)">
+        <rect x="0" y="-8" width="16" height="12" rx="3" fill="#0D9488" fill-opacity="0.2" stroke="#0D9488" stroke-width="1.2"/>
+        <text x="26" y="2" font-weight="700" fill="#0D9488">Composite Key</text>
+        <text x="180" y="2" fill="#64748B">UNIQUE(device_id, need_id)</text>
+      </g>
+
+      <g transform="translate(0, 140)">
+        <line x1="0" y1="0" x2="70" y2="0" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="85" y="4" font-weight="700" fill="#0F172A">1 — N Relationship</text>
+        <text x="230" y="4" fill="#64748B">(One to Many)</text>
+      </g>
+
+      <g transform="translate(0, 180)">
+        <line x1="0" y1="0" x2="70" y2="0" stroke="#475569" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+        <text x="85" y="4" font-weight="700" fill="#0F172A">1 — 0..1 Relationship</text>
+        <text x="230" y="4" fill="#64748B">(One to Optional One)</text>
+      </g>
+
+      <g transform="translate(0, 230)">
+        <rect x="0" y="0" width="470" height="130" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="16" y="24" font-weight="700" fill="#0F172A">Database Normalization Guarantee:</text>
+        <text x="16" y="46" fill="#475569">• Schema conforms strictly to Third Normal Form (3NF).</text>
+        <text x="16" y="66" fill="#475569">• No transitive or partial dependencies across tables.</text>
+        <text x="16" y="86" fill="#475569">• PostGIS geometry points are kept 100% in sync with</text>
+        <text x="16" y="106" fill="#475569">   ORM float coordinates via database triggers.</text>
+      </g>
+    </g>
+  </g>
+
+</svg>

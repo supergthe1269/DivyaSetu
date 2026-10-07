@@ -173,7 +173,16 @@ Every state transition triggers an automated entry in the PostgreSQL `audit_log`
 
 ## Database Design
 
-The relational schema comprises **11 core tables** modeled in Third Normal Form (3NF):
+The relational schema comprises **11 core tables** modeled in Third Normal Form (3NF) over PostgreSQL 16 and PostGIS 3:
+
+<p align="center">
+  <a href="docs/ER-diagram/er-diagram.png">
+    <img src="docs/ER-diagram/er-diagram.png" alt="DivyaSetu Relational E-R Diagram (Database Schema)" width="100%"/>
+  </a>
+</p>
+<p align="center">
+  <em>Figure: DivyaSetu Complete E-R Diagram — 11 Normalized Tables, PostGIS Spatial Engine, Triggers &amp; Integrity Ledgers. (Vector SVG: <a href="docs/ER-diagram/er-diagram.svg"><code>docs/ER-diagram/er-diagram.svg</code></a>)</em>
+</p>
 
 | Table | Description | Key Attributes |
 |-------|-------------|----------------|

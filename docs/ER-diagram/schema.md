@@ -7,6 +7,17 @@
 
 ## 1. Entity-Relationship (ER) Diagram
 
+<p align="center">
+  <a href="er-diagram.png">
+    <img src="er-diagram.png" alt="DivyaSetu Relational E-R Diagram" width="100%"/>
+  </a>
+</p>
+<p align="center">
+  <em>Figure 1: DivyaSetu Complete E-R Diagram (PostgreSQL 16 + PostGIS Spatial Engine, 11 Tables, 3NF Compliant). <a href="er-diagram.svg">View Vector SVG</a></em>
+</p>
+
+### Interactive / Mermaid Representation
+
 ```mermaid
 erDiagram
     USERS ||--o{ DEVICES : "lists (donates)"
