@@ -4,6 +4,7 @@ import { Need, Match, DeviceCategory } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { StatusBadge } from '../components/StatusBadge';
 import { Link } from 'react-router-dom';
+import { getDeviceImageUrl, CATEGORY_DEFAULT_IMAGES } from '../data/deviceImages';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -198,28 +199,35 @@ export const SeekerDashboard: React.FC = () => {
          ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* LEFT COLUMN: ACTIVE NEEDS LIST */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between">
+        {/* LEFT COLUMN: ACTIVE NEEDS LIST (DEDICATED INDEPENDENT SIDEBAR) */}
+        <div className="lg:col-span-5 flex flex-col lg:sticky lg:top-20 max-h-[calc(100vh-6rem)]">
+          <div className="pb-3 border-b border-slate-200 flex items-center justify-between shrink-0">
             <h2 className="font-display text-base font-bold text-slate-900 flex items-center gap-2">
               <Clock className="w-4 h-4 text-sky-600" />
-              <span>Active Demand Requests ({needs.length})</span>
+              <span>Active Demands ({needs.length})</span>
             </h2>
+            <button
+              onClick={() => setShowNeedModal(true)}
+              className="btn-press text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-colors shadow-2xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Post Need</span>
+            </button>
           </div>
 
-          {loading ? (
-            <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
-              Loading requests...
-            </div>
-          ) : needs.length > 0 ? (
-            <div className="space-y-3">
-              {needs.map((n) => {
+          <div className="overflow-y-auto pr-1.5 pt-3 flex-1 space-y-3 custom-scrollbar">
+            {loading ? (
+              <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
+                Loading requests...
+              </div>
+            ) : needs.length > 0 ? (
+              needs.map((n) => {
                 const isSelected = selectedNeed?.id === n.id;
                 return (
                   <button
                     key={n.id}
                     onClick={() => setSelectedNeed(n)}
-                    className={`btn-press w-full text-left p-5 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
+                    className={`btn-press w-full text-left p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
                       isSelected
                         ? 'bg-sky-50/90 border-sky-400 ring-2 ring-sky-500/20 shadow-soft'
                         : 'bg-white border-slate-200/90 hover:border-slate-300 shadow-card'
@@ -264,22 +272,22 @@ export const SeekerDashboard: React.FC = () => {
                     </div>
                   </button>
                 );
-              })}
-            </div>
-          ) : (
-            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/90 space-y-3 shadow-card">
-              <Clock className="w-10 h-10 text-slate-300 mx-auto" />
-              <h3 className="font-display font-bold text-base text-slate-800">No active demand requests</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Click "Post New Need" above to submit an assistive device requirement.
-              </p>
-            </div>
-          )}
+              })
+            ) : (
+              <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/90 space-y-3 shadow-card">
+                <Clock className="w-10 h-10 text-slate-300 mx-auto" />
+                <h3 className="font-display font-bold text-base text-slate-800">No active demand requests</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Click "Post Need" above to submit an assistive device requirement.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* RIGHT COLUMN: CANDIDATE MATCHES & CONCURRENCY ALLOCATION */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="lg:col-span-7 flex flex-col lg:sticky lg:top-20 max-h-[calc(100vh-6rem)]">
+          <div className="pb-3 border-b border-slate-200 flex items-center justify-between shrink-0">
             <h2 className="font-display text-base font-bold text-slate-900 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-600" />
               <span>PostGIS Top-Ranked Matches {selectedNeed ? `(Need #${selectedNeed.id})` : ''}</span>
@@ -295,55 +303,70 @@ export const SeekerDashboard: React.FC = () => {
             )}
           </div>
 
-          {matchingLoading ? (
-            <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200 space-y-2">
-              <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p>Executing PostGIS ST_DWithin + CTE Multi-Criteria Scoring...</p>
-            </div>
-          ) : matches.length > 0 ? (
-            <div className="space-y-4">
-              {matches.map((m, idx) => {
+          <div className="overflow-y-auto pr-2 pt-3 flex-1 space-y-4 custom-scrollbar">
+            {matchingLoading ? (
+              <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200 space-y-2">
+                <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                <p>Executing PostGIS ST_DWithin + CTE Multi-Criteria Scoring...</p>
+              </div>
+            ) : matches.length > 0 ? (
+              matches.map((m, idx) => {
                 const isAccepting = claimingMatchId === m.id;
                 const scorePercent = Math.min(100, Math.round((m.score || 0) * 100));
+                const devImg = getDeviceImageUrl(m.device);
 
                 return (
                   <div
                     key={m.id}
                     className="glass-card rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-card hover:border-purple-300 transition-all space-y-4"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 font-display font-extrabold flex items-center justify-center text-sm border border-purple-100">
-                          #{idx + 1}
+                    {/* Top Row: Device Thumbnail, Title & Fit Score */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-3 border-b border-slate-100">
+                      <div className="flex items-start gap-3.5">
+                        {/* Device Photo Thumbnail */}
+                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 shadow-2xs">
+                          <img
+                            src={devImg}
+                            alt={m.device?.type?.label || 'Matched equipment'}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              const fallbackCat = (m.device?.type?.category || 'WHEELCHAIR') as DeviceCategory;
+                              (e.currentTarget as HTMLImageElement).src = CATEGORY_DEFAULT_IMAGES[fallbackCat];
+                            }}
+                          />
+                          <div className="absolute top-1 left-1 w-5 h-5 rounded-md bg-purple-700 text-white font-extrabold flex items-center justify-center text-[10px] shadow-xs">
+                            #{idx + 1}
+                          </div>
                         </div>
-                        <div>
+
+                        <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-bold text-slate-500">
+                            <span className="font-mono text-xs font-bold text-slate-600">
                               {m.device?.serial}
                             </span>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60">
                               SAFE Certified
                             </span>
                           </div>
-                          <h3 className="font-display text-base font-bold text-slate-900 mt-0.5">
+                          <h3 className="font-display text-base font-bold text-slate-900">
                             {m.device?.type?.label || m.device?.type?.category}
                           </h3>
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                            {m.device?.description}
+                          </p>
                         </div>
                       </div>
 
                       {/* Match Score Badge */}
-                      <div className="flex items-center gap-2 self-start sm:self-auto">
-                        <div className="text-right">
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2 shrink-0">
+                        <div className="text-left sm:text-right">
                           <span className="text-[10px] uppercase font-bold text-slate-400 block">Fit Score</span>
-                          <span className="text-sm font-extrabold text-purple-700">{scorePercent}%</span>
+                          <span className="text-base font-extrabold text-purple-700">{scorePercent}%</span>
                         </div>
                         <StatusBadge status={m.status} size="sm" />
                       </div>
                     </div>
-
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {m.device?.description}
-                    </p>
 
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
                       <span className="flex items-center gap-1 font-medium bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/60">
@@ -352,7 +375,7 @@ export const SeekerDashboard: React.FC = () => {
                       </span>
                       <span className="flex items-center gap-1 font-medium bg-teal-50 text-teal-800 px-2.5 py-1 rounded-lg border border-teal-200/60">
                         <MapPin className="w-3.5 h-3.5 text-teal-600" />
-                        <span>Proximity Radius Active</span>
+                        <span>PostGIS Proximity Active</span>
                       </span>
                     </div>
 
@@ -390,17 +413,17 @@ export const SeekerDashboard: React.FC = () => {
                     </div>
                   </div>
                 );
-              })}
-            </div>
-          ) : (
-            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/90 space-y-3 shadow-card">
-              <Sparkles className="w-10 h-10 text-slate-300 mx-auto" />
-              <h3 className="font-display font-bold text-base text-slate-800">No candidate matches generated yet</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Select a demand request from the left column to run the PostGIS spatial matching engine.
-              </p>
-            </div>
-          )}
+              })
+            ) : (
+              <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/90 space-y-3 shadow-card">
+                <Sparkles className="w-10 h-10 text-slate-300 mx-auto" />
+                <h3 className="font-display font-bold text-base text-slate-800">No candidate matches generated yet</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                  Select a demand request from the left column to run the PostGIS spatial matching engine.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
       </div>

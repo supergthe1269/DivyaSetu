@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { deviceApi, needApi } from '../api/client';
 import { StatusBadge } from '../components/StatusBadge';
+import { getDeviceImageUrl } from '../data/deviceImages';
 import { 
   Search, 
   Compass, 
@@ -226,17 +227,26 @@ export const TrackTrace: React.FC = () => {
          ========================================================================= */}
       {data?.device && (
         <div className="glass-panel p-6 sm:p-8 rounded-3xl shadow-card space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-extrabold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-100">
-                  {activeDevice.serial}
-                </span>
-                <StatusBadge status={activeDevice.status} size="md" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div className="flex items-center gap-3.5">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/90 shadow-soft shrink-0">
+                <img
+                  src={getDeviceImageUrl(activeDevice)}
+                  alt={activeDevice.type?.label || activeDevice.type?.category || 'Device Photo'}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <h2 className="font-display text-xl sm:text-2xl font-bold text-slate-900 mt-1.5">
-                {activeDevice.type?.label || activeDevice.type?.category}
-              </h2>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm font-extrabold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-100">
+                    {activeDevice.serial}
+                  </span>
+                  <StatusBadge status={activeDevice.status} size="md" />
+                </div>
+                <h2 className="font-display text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                  {activeDevice.type?.label || activeDevice.type?.category}
+                </h2>
+              </div>
             </div>
 
             <div className="text-left sm:text-right">
@@ -301,16 +311,34 @@ export const TrackTrace: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Card 1: Asset & Donor Origin */}
-          <div className="glass-card p-6 rounded-2xl border border-slate-200/90 shadow-card space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="font-display text-sm font-bold text-slate-900">Donor Origin Node</h3>
-                <span className="text-[10px] text-slate-400">Intake & Specifications</span>
+          <div className="glass-card rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+            <div className="relative h-36 bg-slate-100 overflow-hidden border-b border-slate-200/80">
+              <img
+                src={getDeviceImageUrl(activeDevice)}
+                alt={activeDevice.type?.label || 'Asset Image'}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent pointer-events-none" />
+              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between">
+                <span className="text-[10px] font-bold text-white bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20">
+                  Donor Physical Capture
+                </span>
+                <span className="text-[10px] font-mono font-bold text-sky-200 bg-sky-950/80 backdrop-blur-md px-2 py-0.5 rounded border border-sky-400/30">
+                  {activeDevice.serial}
+                </span>
               </div>
             </div>
+
+            <div className="p-5 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-display text-sm font-bold text-slate-900">Donor Origin Node</h3>
+                  <span className="text-[10px] text-slate-400">Intake & Specifications</span>
+                </div>
+              </div>
 
             <div className="space-y-2.5 text-xs">
               <div className="flex justify-between">
@@ -337,6 +365,7 @@ export const TrackTrace: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
 
           {/* Card 2: Clinical Safety Inspection */}
           <div className="glass-card p-6 rounded-2xl border border-slate-200/90 shadow-card space-y-4">

@@ -71,6 +71,15 @@ const CATEGORY_LABELS: Record<DeviceCategory, string> = {
   BRAILLE_KIT: "Braille slate & stylus kit",
   PROSTHETIC: "Below-knee prosthetic leg",
 };
+
+const CATEGORY_IMAGES: Record<DeviceCategory, string> = {
+  WHEELCHAIR: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
+  HEARING_AID: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=800&q=80",
+  CRUTCH: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=800&q=80",
+  TRICYCLE: "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80",
+  BRAILLE_KIT: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
+  PROSTHETIC: "https://images.unsplash.com/photo-1584516150909-c43483ee7932?auto=format&fit=crop&w=800&q=80",
+};
 const CONDITIONS = ["GOOD", "VERY GOOD", "EXCELLENT", "FAIR"];
 
 async function main() {
@@ -160,12 +169,14 @@ async function main() {
     const place = PLACES[i % PLACES.length];
     const condition = CONDITIONS[i % CONDITIONS.length];
 
+    const imageUrl = CATEGORY_IMAGES[cat];
     const device = await prisma.device.upsert({
       where: { serial },
       update: {
         condition,
         lat: place.lat,
         lng: place.lng,
+        imageUrl,
         status: "AVAILABLE",
       },
       create: {
@@ -176,6 +187,7 @@ async function main() {
         description: `${CATEGORY_LABELS[cat]} — ${condition.toLowerCase()} condition, registered at ${place.city} (${place.state}).`,
         lat: place.lat,
         lng: place.lng,
+        imageUrl,
         status: "AVAILABLE",
       },
     });

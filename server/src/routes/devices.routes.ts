@@ -23,6 +23,7 @@ router.post("/", requireAuth, requireRole("DONOR"), async (req: AuthedRequest, r
         description: b.description,
         lat: b.lat,
         lng: b.lng,
+        imageUrl: b.imageUrl ?? null,
         status: "CERTIFYING", // awaiting verification
       },
       include: { type: true },

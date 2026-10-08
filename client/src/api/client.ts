@@ -38,6 +38,7 @@ export const deviceApi = {
     description: string;
     lat?: number;
     lng?: number;
+    imageUrl?: string | null;
   }) => api.post('/devices', data),
 };
 

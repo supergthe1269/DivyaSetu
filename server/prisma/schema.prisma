@@ -118,6 +118,7 @@ model Device {
   lat          Float?
   lng          Float?
   status       DeviceStatus  @default(AVAILABLE)
+  imageUrl     String?       @map("image_url")
   listedAt     DateTime      @default(now()) @map("listed_at")
   isDeleted    Boolean       @default(false) @map("is_deleted")
 

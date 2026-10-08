@@ -57,6 +57,7 @@ export interface Device {
   lat?: number | null;
   lng?: number | null;
   status: DeviceStatus;
+  imageUrl?: string | null;
   listedAt: string;
   certifications?: Certification[];
   matches?: Match[];
