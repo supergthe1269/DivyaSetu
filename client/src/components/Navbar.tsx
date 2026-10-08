@@ -60,8 +60,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
           <div className="flex items-center justify-between h-16">
             
             {/* Brand Logo & Name */}
-            <Link to="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl">
-              <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center p-1.5 shadow-xs group-hover:scale-105 group-hover:border-sky-300 transition-all">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center p-1.5 shadow-xs group-hover:scale-105 group-hover:border-sky-300 transition-all shrink-0">
                 <img 
                   src="/logo.png" 
                   alt="DivyaSetu Logo" 
@@ -70,15 +70,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-display font-extrabold text-lg text-slate-900 tracking-tight">DivyaSetu</span>
-                  <span className="text-[11px] px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60 font-semibold tracking-normal">दिव्यसेतु</span>
+                  <span className="font-display font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">DivyaSetu</span>
+                  <span className="hidden sm:inline-flex text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60 font-semibold tracking-normal">दिव्यसेतु</span>
                 </div>
-                <p className="hidden sm:block text-[11px] text-slate-500 font-medium -mt-0.5">Assistive Device Access & Redistribution</p>
+                <p className="hidden 2xl:block text-[11px] text-slate-500 font-medium -mt-0.5">Assistive Device Access & Redistribution</p>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1 rounded-xl border border-slate-200/60">
+            <nav className="hidden lg:flex items-center gap-1 bg-slate-100/70 p-1 rounded-xl border border-slate-200/60 shrink-0">
               {filteredNav.map((item) => {
                 const active = location.pathname === item.path;
                 const Icon = item.icon;
@@ -86,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       active
                         ? 'bg-white text-sky-700 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -100,10 +100,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
             </nav>
 
             {/* Right Side: Role Selector, AI CTA & Profile */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               
-              {/* Quick Persona Switcher for Evaluators (Desktop) */}
-              <div className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/70">
+              {/* Quick Persona Switcher for Evaluators (Large Displays only) */}
+              <div className="hidden 2xl:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/70">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1.5 flex items-center gap-1">
                   <Layers className="w-3 h-3" /> Persona:
                 </span>
@@ -122,32 +122,33 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                 ))}
               </div>
 
-              {/* Mobile Role Switcher Trigger */}
+              {/* Compact Role Switcher Trigger (Below 2xl) */}
               <button
                 onClick={() => setShowRoleModal(true)}
-                className="lg:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700"
+                className="2xl:hidden flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs font-semibold text-slate-700 transition-colors shrink-0"
                 aria-label="Switch Role"
+                title="Switch Demo Persona"
               >
-                <Layers className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-[11px] uppercase font-bold text-sky-700">{user?.role || 'Guest'}</span>
-                <ChevronDown className="w-3 h-3 text-slate-400" />
+                <Layers className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="hidden sm:inline text-[11px] uppercase font-bold text-sky-700">{user?.role || 'Guest'}</span>
+                <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
               </button>
 
-              {/* AI Assistant Quick Trigger (Desktop & Mobile) */}
+              {/* AI Assistant Quick Trigger */}
               <button
                 onClick={onOpenAI}
                 aria-label="Open AI Assistant"
-                className="btn-press flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 text-white text-xs font-bold shadow-soft hover:shadow-glow-purple transition-all"
+                className="btn-press flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 text-white text-xs font-bold shadow-soft hover:shadow-glow-purple transition-all shrink-0"
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">AI Query</span>
+                <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden md:inline">AI Query</span>
               </button>
 
               {/* User Authentication Status */}
               {user ? (
-                <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-                  <div className="hidden sm:flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[120px]">{user.name}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-2 border-l border-slate-200 shrink-0">
+                  <div className="hidden md:flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[100px] xl:max-w-[130px]">{user.name}</span>
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded border inline-block ml-auto mt-0.5 ${getRoleBadgeStyle(user.role)}`}>
                       {user.role}
                     </span>
@@ -155,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                   <button
                     onClick={logout}
                     title="Sign Out"
-                    className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors shrink-0"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -163,10 +164,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
               ) : (
                 <Link
                   to="/login"
-                  className="btn-press flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-sky-800 bg-sky-50 border border-sky-200/80 rounded-xl hover:bg-sky-100 transition-colors"
+                  className="btn-press flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 text-xs font-bold text-sky-800 bg-sky-50 border border-sky-200/80 rounded-xl hover:bg-sky-100 transition-colors shrink-0 whitespace-nowrap"
                 >
-                  <UserIcon className="w-3.5 h-3.5" />
-                  Sign In
+                  <UserIcon className="w-3.5 h-3.5 shrink-0" />
+                  <span>Sign In</span>
                 </Link>
               )}
             </div>
