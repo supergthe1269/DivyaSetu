@@ -55,30 +55,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
       {/* =========================================================================
           DESKTOP & MOBILE TOP HEADER
          ========================================================================= */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-18 sm:h-20">
             
-            {/* Brand Logo & Name */}
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl shrink-0">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center p-1.5 shadow-xs group-hover:scale-105 group-hover:border-sky-300 transition-all shrink-0">
+            {/* Brand Logo & Name (Enlarged & Prominent) */}
+            <Link to="/" className="flex items-center gap-3 sm:gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-2xl shrink-0">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border-2 border-slate-200/90 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 group-hover:border-sky-400 group-hover:shadow-md transition-all shrink-0 overflow-hidden">
                 <img 
                   src="/logo.png" 
                   alt="DivyaSetu Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain scale-115 transition-transform"
                 />
               </div>
               <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-display font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">DivyaSetu</span>
-                  <span className="hidden sm:inline-flex text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60 font-semibold tracking-normal">दिव्यसेतु</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-display font-black text-xl sm:text-2xl text-slate-900 tracking-tight">DivyaSetu</span>
+                  <span className="hidden sm:inline-flex text-xs px-2 py-0.5 rounded-lg bg-sky-50 text-sky-700 border border-sky-200/80 font-bold tracking-normal">दिव्यसेतु</span>
                 </div>
-                <p className="hidden 2xl:block text-[11px] text-slate-500 font-medium -mt-0.5">Assistive Device Access & Redistribution</p>
+                <p className="hidden 2xl:block text-xs text-slate-600 font-medium -mt-0.5">Assistive Device Access & Redistribution</p>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 bg-slate-100/70 p-1 rounded-xl border border-slate-200/60 shrink-0">
+            <nav className="hidden lg:flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/70 shrink-0">
               {filteredNav.map((item) => {
                 const active = location.pathname === item.path;
                 const Icon = item.icon;
@@ -86,13 +86,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                       active
                         ? 'bg-white text-sky-700 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                        : 'text-slate-700 hover:text-slate-950 hover:bg-white/60'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${active ? 'text-sky-600' : 'text-slate-400'}`} />
+                    <Icon className={`w-4 h-4 ${active ? 'text-sky-600' : 'text-slate-500'}`} />
                     {item.label}
                   </Link>
                 );

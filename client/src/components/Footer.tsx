@@ -10,20 +10,20 @@ export const Footer: React.FC = () => {
           {/* Brand & Abstract */}
           <div className="md:col-span-5 space-y-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200/90 flex items-center justify-center p-1">
-                <img src="/logo.png" alt="DivyaSetu" className="w-full h-full object-contain" />
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white border-2 border-slate-200/90 flex items-center justify-center p-0.5 shadow-2xs overflow-hidden shrink-0">
+                <img src="/logo.png" alt="DivyaSetu" className="w-full h-full object-contain scale-115" />
               </div>
-              <span className="font-display font-extrabold text-base text-slate-900">DivyaSetu (दिव्यसेतु)</span>
+              <span className="font-display font-extrabold text-base sm:text-lg text-slate-900">DivyaSetu (दिव्यसेतु)</span>
               <span className="text-[10px] bg-sky-50 text-sky-800 border border-sky-200/80 font-bold px-2 py-0.5 rounded-full">
                 Track T7
               </span>
             </div>
-            <p className="text-xs text-slate-500 max-w-md leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 max-w-md leading-relaxed font-medium">
               A high-reliability assistive technology redistribution platform engineered with PostgreSQL 16 + PostGIS, 
               verifiable safety ledgers, and multi-criteria spatial matching.
             </p>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
-              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+            <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
+              <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
               <span>Pan-India spatial telemetry active across 52 regional hubs in 6 zones</span>
             </div>
           </div>

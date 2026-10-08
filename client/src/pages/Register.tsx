@@ -42,14 +42,14 @@ export const Register: React.FC = () => {
         
         {/* Header with Logo */}
         <div className="text-center space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto shadow-2xs p-2">
-            <img src="/logo.png" alt="DivyaSetu Logo" className="w-full h-full object-contain" />
+          <div className="w-16 h-16 rounded-2xl bg-white border-2 border-slate-200/90 flex items-center justify-center mx-auto shadow-sm p-1 overflow-hidden">
+            <img src="/logo.png" alt="DivyaSetu Logo" className="w-full h-full object-contain scale-115" />
           </div>
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Create an Account
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-sm text-slate-600 mt-1 font-medium">
               Join the DivyaSetu assistive device redistribution network
             </p>
           </div>

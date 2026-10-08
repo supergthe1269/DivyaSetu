@@ -9,14 +9,17 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 antialiased selection:bg-sky-500 selection:text-white;
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.011em;
+    @apply bg-slate-50 text-slate-900 antialiased selection:bg-sky-500 selection:text-white;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
+    font-weight: 700;
   }
 }
 

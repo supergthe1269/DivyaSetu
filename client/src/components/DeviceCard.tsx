@@ -90,21 +90,21 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, distKm }) => {
 
         {/* Content Body */}
         <div className="p-5 space-y-3">
-          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-slate-700 font-medium line-clamp-2 leading-relaxed">
             {device.description}
           </p>
 
           {/* Technical Ledger Tags */}
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
             {isSafe && (
-              <span className="inline-flex items-center gap-1 font-semibold bg-teal-50 text-teal-800 px-2.5 py-1 rounded-lg border border-teal-200/60">
+              <span className="inline-flex items-center gap-1 font-bold bg-teal-50 text-teal-800 px-2.5 py-1 rounded-lg border border-teal-200/70">
                 <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
                 <span>Certified SAFE</span>
               </span>
             )}
 
             {distKm != null && (
-              <span className="inline-flex items-center gap-1 font-semibold bg-sky-50 text-sky-800 px-2.5 py-1 rounded-lg border border-sky-200/60 ml-auto">
+              <span className="inline-flex items-center gap-1 font-bold bg-sky-50 text-sky-800 px-2.5 py-1 rounded-lg border border-sky-200/70 ml-auto">
                 <MapPin className="w-3.5 h-3.5 text-sky-600" />
                 <span>{distKm} km</span>
               </span>
@@ -114,21 +114,21 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, distKm }) => {
       </div>
 
       {/* Card Footer */}
-      <div className="px-5 py-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between">
-        <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
-          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+      <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between">
+        <span className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5 text-slate-500" />
           {new Date(device.listedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>
         <div className="flex items-center gap-2">
           <Link
             to={`/track?serial=${device.serial}`}
-            className="btn-press text-[11px] font-bold text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-2.5 py-1 rounded-lg transition-colors border border-sky-200/60"
+            className="btn-press text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 px-3 py-1.5 rounded-lg transition-colors border border-sky-200/80"
           >
             Track
           </Link>
           <Link
             to={`/devices/${device.id}`}
-            className="btn-press inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-slate-900 group-hover:translate-x-0.5 transition-all"
+            className="btn-press inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-slate-800 hover:text-slate-950 group-hover:translate-x-0.5 transition-all"
           >
             <span>Ledger</span>
             <ArrowRight className="w-3.5 h-3.5" />
