@@ -37,9 +37,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
     { label: 'Admin Panel', path: '/admin', icon: BarChart3, roles: ['ADMIN'] },
   ];
 
-  const filteredNav = navItems.filter(
-    (item) => !user || item.roles.includes(user.role) || user.role === 'ADMIN'
-  );
+  const filteredNav = navItems.filter((item) => {
+    if (!user) {
+      // Guests only see public portals: Discover and Track & Trace
+      return item.path === '/' || item.path === '/track';
+    }
+    return user.role === 'ADMIN' || item.roles.includes(user.role);
+  });
 
   const getRoleBadgeStyle = (r: Role) => {
     switch (r) {
@@ -57,28 +61,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
          ========================================================================= */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-18 sm:h-20">
+          <div className="flex items-center justify-between h-16">
             
-            {/* Brand Logo & Name (Enlarged & Prominent) */}
-            <Link to="/" className="flex items-center gap-3 sm:gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-2xl shrink-0">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border-2 border-slate-200/90 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 group-hover:border-sky-400 group-hover:shadow-md transition-all shrink-0 overflow-hidden">
+            {/* Brand Logo & Name (Enlarged & Cleanly Scaled) */}
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-2xl shrink-0">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white border border-slate-200/90 flex items-center justify-center p-0.5 shadow-2xs group-hover:scale-105 group-hover:border-sky-400 transition-all shrink-0 overflow-hidden">
                 <img 
                   src="/logo.png" 
                   alt="DivyaSetu Logo" 
-                  className="w-full h-full object-contain scale-115 transition-transform"
+                  className="w-full h-full object-contain scale-120 transition-transform"
                 />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="font-display font-black text-xl sm:text-2xl text-slate-900 tracking-tight">DivyaSetu</span>
-                  <span className="hidden sm:inline-flex text-xs px-2 py-0.5 rounded-lg bg-sky-50 text-sky-700 border border-sky-200/80 font-bold tracking-normal">दिव्यसेतु</span>
+                  <span className="font-display font-black text-lg sm:text-xl text-slate-900 tracking-tight">DivyaSetu</span>
+                  <span className="hidden sm:inline-flex text-[11px] px-2 py-0.5 rounded-lg bg-sky-50 text-sky-700 border border-sky-200/80 font-bold tracking-normal">दिव्यसेतु</span>
                 </div>
-                <p className="hidden 2xl:block text-xs text-slate-600 font-medium -mt-0.5">Assistive Device Access & Redistribution</p>
+                <p className="hidden 2xl:block text-[11px] text-slate-500 font-medium -mt-0.5">Assistive Device Access & Redistribution</p>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/70 shrink-0">
+            <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/70 shrink-0">
               {filteredNav.map((item) => {
                 const active = location.pathname === item.path;
                 const Icon = item.icon;
@@ -86,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                       active
                         ? 'bg-white text-sky-700 shadow-xs'
                         : 'text-slate-700 hover:text-slate-950 hover:bg-white/60'
@@ -100,10 +104,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
             </nav>
 
             {/* Right Side: Role Selector, AI CTA & Profile */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               
               {/* Quick Persona Switcher for Evaluators (Large Displays only) */}
-              <div className="hidden 2xl:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/70">
+              <div className="hidden xl:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/70">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1.5 flex items-center gap-1">
                   <Layers className="w-3 h-3" /> Persona:
                 </span>
@@ -122,10 +126,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                 ))}
               </div>
 
-              {/* Compact Role Switcher Trigger (Below 2xl) */}
+              {/* Compact Role Switcher Trigger (Below xl) */}
               <button
                 onClick={() => setShowRoleModal(true)}
-                className="2xl:hidden flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs font-semibold text-slate-700 transition-colors shrink-0"
+                className="xl:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs font-semibold text-slate-700 transition-colors shrink-0"
                 aria-label="Switch Role"
                 title="Switch Demo Persona"
               >
@@ -138,15 +142,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
               <button
                 onClick={onOpenAI}
                 aria-label="Open AI Assistant"
-                className="btn-press flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 text-white text-xs font-bold shadow-soft hover:shadow-glow-purple transition-all shrink-0"
+                className="btn-press flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 text-white text-xs font-bold shadow-soft hover:shadow-glow-purple transition-all shrink-0"
               >
                 <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden md:inline">AI Query</span>
+                <span className="hidden sm:inline">AI Query</span>
               </button>
 
               {/* User Authentication Status */}
               {user ? (
-                <div className="flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-2 border-l border-slate-200 shrink-0">
+                <div className="flex items-center gap-2 pl-2 border-l border-slate-200 shrink-0">
                   <div className="hidden md:flex flex-col text-right">
                     <span className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[100px] xl:max-w-[130px]">{user.name}</span>
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded border inline-block ml-auto mt-0.5 ${getRoleBadgeStyle(user.role)}`}>
@@ -156,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                   <button
                     onClick={logout}
                     title="Sign Out"
-                    className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors shrink-0"
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors shrink-0"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -164,7 +168,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
               ) : (
                 <Link
                   to="/login"
-                  className="btn-press flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 text-xs font-bold text-sky-800 bg-sky-50 border border-sky-200/80 rounded-xl hover:bg-sky-100 transition-colors shrink-0 whitespace-nowrap"
+                  className="btn-press flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-sky-800 bg-sky-50 border border-sky-200/80 rounded-xl hover:bg-sky-100 transition-colors shrink-0 whitespace-nowrap"
                 >
                   <UserIcon className="w-3.5 h-3.5 shrink-0" />
                   <span>Sign In</span>
@@ -193,7 +197,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
             <span className="text-[10px] tracking-tight">Explore</span>
           </Link>
 
-          {/* 2. Primary Role Workspace (Donor or Seeker) */}
+          {/* 2. Primary Role Workspace (or Track for Guest) */}
           {user?.role === 'DONOR' ? (
             <Link
               to="/donor"
@@ -224,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
               <ShieldAlert className="w-5 h-5" />
               <span className="text-[10px] tracking-tight">Inspect</span>
             </Link>
-          ) : (
+          ) : user?.role === 'ADMIN' ? (
             <Link
               to="/admin"
               className={`flex flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition-colors ${
@@ -233,6 +237,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
             >
               <BarChart3 className="w-5 h-5" />
               <span className="text-[10px] tracking-tight">Admin</span>
+            </Link>
+          ) : (
+            <Link
+              to="/track"
+              className={`flex flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition-colors ${
+                location.pathname === '/track' ? 'text-sky-600 font-bold' : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Compass className="w-5 h-5" />
+              <span className="text-[10px] tracking-tight">Track</span>
             </Link>
           )}
 
