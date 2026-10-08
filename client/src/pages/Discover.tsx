@@ -292,7 +292,7 @@ export const Discover: React.FC = () => {
         filteredDevices.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDevices.map((dev) => (
-              <DeviceCard key={dev.id} device={dev} />
+              <DeviceCard key={dev.id} device={dev} distKm={dev.distKm} />
             ))}
           </div>
         ) : (

@@ -35,6 +35,15 @@ interface MapWidgetProps {
   userCoords?: [number, number] | null;
 }
 
+const getZoomForRadius = (km: number): number => {
+  if (km <= 15) return 12;
+  if (km <= 35) return 11;
+  if (km <= 75) return 10;
+  if (km <= 150) return 9;
+  if (km <= 300) return 8;
+  return 7;
+};
+
 // Helper component to re-center the map dynamically
 const ChangeView: React.FC<{ center: [number, number]; zoom: number }> = ({ center, zoom }) => {
   const map = useMap();
@@ -48,21 +57,22 @@ export const MapWidget: React.FC<MapWidgetProps> = ({
   devices = [],
   needs = [],
   center = [13.0827, 80.2707], // Default Chennai cluster
-  zoom = 11,
+  zoom,
   selectedRadiusKm = 50,
   userCoords,
 }) => {
   const effectiveCenter = userCoords || center;
+  const effectiveZoom = zoom !== undefined ? zoom : getZoomForRadius(selectedRadiusKm);
 
   return (
     <div className="relative w-full h-full min-h-[420px] rounded-xl overflow-hidden border border-slate-200 shadow-xs">
       <MapContainer
         center={effectiveCenter}
-        zoom={zoom}
+        zoom={effectiveZoom}
         scrollWheelZoom={false}
         className="w-full h-full"
       >
-        <ChangeView center={effectiveCenter} zoom={zoom} />
+        <ChangeView center={effectiveCenter} zoom={effectiveZoom} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

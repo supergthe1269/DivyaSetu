@@ -37,8 +37,8 @@ candidates AS (
     d.id                                              AS device_id,
     n.need_id                                         AS need_id,
     n.urgency_hours,
-    ST_Distance(n.need_geom, d.geometry) / 1000.0     AS dist_km,   -- metres -> km
-    0.6 * (1.0 - least(ST_Distance(n.need_geom, d.geometry) / 1000.0 / ($2::float / 1000.0), 1.0))
+    ST_Distance(n.need_geom::geography, d.geometry::geography) / 1000.0     AS dist_km,   -- metres -> km
+    0.6 * (1.0 - least((ST_Distance(n.need_geom::geography, d.geometry::geography) / 1000.0) / ($2::float / 1000.0), 1.0))
       + 0.3 * (1.0 - exp(-n.urgency_hours::float / 168.0))
       + 0.1 * CASE WHEN d.condition = 'EXCELLENT' THEN 1.0 ELSE 0.5 END AS score
   FROM geo n
@@ -46,7 +46,7 @@ candidates AS (
   WHERE d.status = 'AVAILABLE'
     AND d.type_id = (SELECT id FROM device_types WHERE category = n.need_cat)
     AND d.is_deleted = false
-    AND ST_DWithin(n.need_geom, d.geometry, $2::float)  -- radius in metres
+    AND ST_DWithin(n.need_geom::geography, d.geometry::geography, $2::float)  -- radius in metres
 ),
 ranked AS (
   SELECT *, DENSE_RANK() OVER (ORDER BY score DESC, dist_km ASC) AS rnk
@@ -70,8 +70,8 @@ candidates AS (
     d.id                                              AS device_id,
     n.need_id                                         AS need_id,
     n.urgency_hours,
-    ST_Distance(n.need_geom, d.geometry) / 1000.0     AS dist_km,
-    0.6 * (1.0 - least(ST_Distance(n.need_geom, d.geometry) / 1000.0 / 2500.0, 1.0))
+    ST_Distance(n.need_geom::geography, d.geometry::geography) / 1000.0     AS dist_km,
+    0.6 * (1.0 - least((ST_Distance(n.need_geom::geography, d.geometry::geography) / 1000.0) / 2500.0, 1.0))
       + 0.3 * (1.0 - exp(-n.urgency_hours::float / 168.0))
       + 0.1 * CASE WHEN d.condition = 'EXCELLENT' THEN 1.0 ELSE 0.5 END AS score
   FROM geo n

@@ -191,17 +191,19 @@ router.get("/", requireAuth, async (req, res, next) => {
     }
 
     const rows = await prisma.$queryRawUnsafe(
-      `SELECT d.id AS device_id, round((ST_Distance(n.geom, d.geometry) / 1000.0)::numeric, 1)::float AS dist_km
+      `SELECT d.id AS device_id, round((ST_Distance(n.geom::geography, d.geometry::geography) / 1000.0)::numeric, 1)::float AS dist_km
          FROM devices d
          CROSS JOIN (SELECT ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geometry AS geom) n
         WHERE d.status = 'AVAILABLE'
           AND d.is_deleted = false
-          AND ST_DWithin(n.geom, d.geometry, ${radius}::float * 1000)
+          AND ST_DWithin(n.geom::geography, d.geometry::geography, ${radius}::float * 1000)
         ORDER BY dist_km ASC
         LIMIT 50`
     );
-    const ids = (rows as { device_id: number }[]).map((r) => r.device_id);
-    const devices = ids.length
+    const ids = (rows as { device_id: number; dist_km: number }[]).map((r) => r.device_id);
+    const distMap = new Map((rows as any[]).map((r) => [r.device_id, r.dist_km]));
+
+    const rawDevices = ids.length
       ? await prisma.device.findMany({ 
           where: { id: { in: ids } }, 
           include: { 
@@ -211,6 +213,11 @@ router.get("/", requireAuth, async (req, res, next) => {
           } 
         })
       : [];
+
+    const devices = rawDevices
+      .map((d) => ({ ...d, distKm: distMap.get(d.id) }))
+      .sort((a, b) => (distMap.get(a.id) ?? 0) - (distMap.get(b.id) ?? 0));
+
     res.json({ devices, distancesKm: rows });
   } catch (e) {
     next(e);
@@ -226,7 +233,7 @@ router.get("/:id/matches", requireAuth, async (req, res, next) => {
 
     const rows = await prisma.$queryRawUnsafe(
       `WITH g AS (SELECT geometry AS g FROM devices WHERE id = ${id})
-       SELECT n.id AS need_id, round((ST_Distance(g.g, n.geometry) / 1000.0)::numeric,1)::float AS dist_km
+       SELECT n.id AS need_id, round((ST_Distance(g.g::geography, n.geometry::geography) / 1000.0)::numeric, 1)::float AS dist_km
        FROM needs n CROSS JOIN g
        WHERE n.status = 'AVAILABLE' AND n.category = '${device.type.category}'
        ORDER BY (n.urgency_hours) ASC, dist_km ASC LIMIT 5`
