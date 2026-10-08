@@ -73,12 +73,12 @@ const CATEGORY_LABELS: Record<DeviceCategory, string> = {
 };
 
 const CATEGORY_IMAGES: Record<DeviceCategory, string> = {
-  WHEELCHAIR: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
-  HEARING_AID: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=800&q=80",
-  CRUTCH: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=800&q=80",
-  TRICYCLE: "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80",
-  BRAILLE_KIT: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
-  PROSTHETIC: "https://images.unsplash.com/photo-1584516150909-c43483ee7932?auto=format&fit=crop&w=800&q=80",
+  WHEELCHAIR: "/images/devices/wheelchair.jpg",
+  HEARING_AID: "/images/devices/hearing_aid.jpg",
+  CRUTCH: "/images/devices/crutch.jpg",
+  TRICYCLE: "/images/devices/tricycle.jpg",
+  BRAILLE_KIT: "/images/devices/braille_kit.jpg",
+  PROSTHETIC: "/images/devices/prosthetic.jpg",
 };
 const CONDITIONS = ["GOOD", "VERY GOOD", "EXCELLENT", "FAIR"];
 
