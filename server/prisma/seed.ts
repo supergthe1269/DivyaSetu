@@ -231,7 +231,7 @@ async function main() {
     { cat: "BRAILLE_KIT", urgencyH: 240, placeIdx: 20 }, // Jaipur
     { cat: "PROSTHETIC", urgencyH: 216, placeIdx: 23 }, // Mumbai
     { cat: "WHEELCHAIR", urgencyH: 12, placeIdx: 24 },  // Pune
-    { cityIdx: 26, cat: "HEARING_AID", urgencyH: 36, placeIdx: 26 }, // Ahmedabad
+    { cat: "HEARING_AID", urgencyH: 36, placeIdx: 26 }, // Ahmedabad
     { cat: "WHEELCHAIR", urgencyH: 48, placeIdx: 29 },  // Kolkata
     { cat: "CRUTCH", urgencyH: 72, placeIdx: 33 },       // Bhopal
     { cat: "WHEELCHAIR", urgencyH: 24, placeIdx: 36 },  // Guwahati
